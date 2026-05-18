@@ -112,26 +112,6 @@ cd productivibe-app
 open index.html
 ```
 
----
-
-## 🔊 Adding Sound Files
-
-Create a `sounds` folder and add MP3 files:
-
-```text
-sounds/
-├── alarm.mp3
-├── click.mp3
-├── forest.mp3
-├── ocean.mp3
-├── rain.mp3
-├── white_noise.mp3
-└── cafe.mp3
-```
-
-The app still works without sound files — it simply falls back to visual notifications.
-
----
 
 ## 📁 Project Structure
 
