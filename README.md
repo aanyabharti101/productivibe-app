@@ -192,7 +192,7 @@ Designed to work across desktop, tablet, and mobile devices.
 
 * [ ] Custom timer durations
 * [ ] More ambient tracks
-* [ ] Habit tracker with streaks
+* [ ] More Rewards/Levels/Features
 * [ ] Data export / backup
 * [ ] Dark mode toggle
 * [ ] PWA support
