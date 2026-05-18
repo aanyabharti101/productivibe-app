@@ -1,9 +1,568 @@
 // ==============================
-// POMODORO TIMER FUNCTIONALITY
+// PRODUCTIVIBE - COMPLETE WITH ANIMALS, QUOTES & BREATHING
 // ==============================
 
-let timerInterval;
-let timeLeft = 25 * 60; // 25 minutes in seconds
+console.log('🐾 ProductiVibe starting...');
+
+// ========== LEVEL SYSTEM (Progressive) ==========
+const levelRequirements = {
+    1: { tasksNeeded: 5, name: "🌱 Beginner", animal: "🐣", animalName: "Hatchling" },
+    2: { tasksNeeded: 10, name: "📋 Task Master", animal: "🐿️", animalName: "Squirrel" },
+    3: { tasksNeeded: 20, name: "⚡ Productivity Pro", animal: "🦊", animalName: "Fox" },
+    4: { tasksNeeded: 35, name: "🎯 Focus Warrior", animal: "🐺", animalName: "Wolf" },
+    5: { tasksNeeded: 50, name: "👑 Productivity Legend", animal: "🦅", animalName: "Eagle" },
+    6: { tasksNeeded: 75, name: "🏆 Ultimate Champion", animal: "🐉", animalName: "Dragon" },
+    7: { tasksNeeded: 100, name: "🌟 Mythical Master", animal: "🦄", animalName: "Unicorn" }
+};
+
+const levelRewards = {
+    1: { bgGradient: "linear-gradient(135deg, #f0f9ff 0%, #e0f2fe 100%)" },
+    2: { bgGradient: "linear-gradient(135deg, #ecfdf5 0%, #d1fae5 100%)" },
+    3: { bgGradient: "linear-gradient(135deg, #fffbeb 0%, #fef3c7 100%)" },
+    4: { bgGradient: "linear-gradient(135deg, #fef2f2 0%, #fee2e2 100%)" },
+    5: { bgGradient: "linear-gradient(135deg, #f5f3ff 0%, #ede9fe 100%)" },
+    6: { bgGradient: "linear-gradient(135deg, #fdf2f8 0%, #fce7f3 100%)" },
+    7: { bgGradient: "linear-gradient(135deg, #ecfeff 0%, #cffafe 100%)" }
+};
+
+// ========== QUOTES DATABASE ==========
+const quotesDB = {
+    motivation: [
+        { text: "The secret of getting ahead is getting started.", author: "Mark Twain" },
+        { text: "Don't watch the clock; do what it does. Keep going.", author: "Sam Levenson" },
+        { text: "The future depends on what you do today.", author: "Mahatma Gandhi" },
+        { text: "Your limitation—it's only your imagination.", author: "Unknown" },
+        { text: "Push yourself, because no one else is going to do it for you.", author: "Unknown" },
+        { text: "Great things never come from comfort zones.", author: "Unknown" },
+        { text: "Dream it. Wish it. Do it.", author: "Unknown" },
+        { text: "Success doesn't just find you. You have to go out and get it.", author: "Unknown" }
+    ],
+    selfcare: [
+        { text: "Rest when you're weary. Refresh and renew yourself.", author: "Oprah Winfrey" },
+        { text: "Self-care is not selfish. You cannot serve from an empty vessel.", author: "Eleanor Brown" },
+        { text: "Almost everything will work again if you unplug it for a few minutes.", author: "Anne Lamott" },
+        { text: "Be patient with yourself. Self-growth is tender.", author: "Unknown" },
+        { text: "Talk to yourself like you would to someone you love.", author: "Brené Brown" },
+        { text: "You owe yourself the love that you so freely give to others.", author: "Unknown" }
+    ],
+    confidence: [
+        { text: "Believe you can and you're halfway there.", author: "Theodore Roosevelt" },
+        { text: "Confidence comes not from always being right but from not fearing to be wrong.", author: "Peter T. McIntyre" },
+        { text: "You are enough just as you are.", author: "Meghan Markle" },
+        { text: "With confidence, you have won before you have started.", author: "Marcus Garvey" },
+        { text: "The most beautiful thing you can wear is confidence.", author: "Blake Lively" }
+    ],
+    career: [
+        { text: "Choose a job you love, and you will never have to work a day in your life.", author: "Confucius" },
+        { text: "Success is not the key to happiness. Happiness is the key to success.", author: "Albert Schweitzer" },
+        { text: "The only way to do great work is to love what you do.", author: "Steve Jobs" },
+        { text: "Don't be afraid to give up the good to go for the great.", author: "John D. Rockefeller" },
+        { text: "Your work is to discover your work and then with all your heart to give yourself to it.", author: "Buddha" }
+    ],
+    famous: [
+        { text: "Be the change that you wish to see in the world.", author: "Mahatma Gandhi" },
+        { text: "The only impossible journey is the one you never begin.", author: "Tony Robbins" },
+        { text: "Everything you've ever wanted is on the other side of fear.", author: "George Addair" },
+        { text: "The future belongs to those who believe in the beauty of their dreams.", author: "Eleanor Roosevelt" },
+        { text: "It does not matter how slowly you go as long as you do not stop.", author: "Confucius" },
+        { text: "Success is not final, failure is not fatal: it is the courage to continue that counts.", author: "Winston Churchill" }
+    ]
+};
+
+// ========== DAILY AFFIRMATIONS / RANDOM ACTS ==========
+const dailyChallenges = [
+    { icon: "💧", text: "Drink a glass of water right now!", color: "#3b82f6" },
+    { icon: "🧘", text: "Take 3 deep breaths and stretch", color: "#10b981" },
+    { icon: "📝", text: "Write down 3 things you're grateful for", color: "#f59e0b" },
+    { icon: "🚶", text: "Stand up and walk for 1 minute", color: "#8b5cf6" },
+    { icon: "🎧", text: "Listen to a song that makes you happy", color: "#ec4899" },
+    { icon: "📖", text: "Read something inspiring for 2 minutes", color: "#06b6d4" },
+    { icon: "💬", text: "Send a kind message to someone", color: "#22c55e" },
+    { icon: "🧹", text: "Tidy up one small area of your workspace", color: "#eab308" },
+    { icon: "🎯", text: "Review your top goal for today", color: "#ef4444" },
+    { icon: "🌿", text: "Step outside for fresh air (1 minute)", color: "#14b8a6" }
+];
+
+// ========== DOM Elements ==========
+const levelDisplay = document.getElementById('currentLevel');
+const levelNameDisplay = document.getElementById('levelName');
+const streakDisplay = document.getElementById('streakCount');
+const tasksToNextDisplay = document.getElementById('tasksToNext');
+const progressFill = document.getElementById('progressFill');
+const animalEmoji = document.getElementById('animalEmoji');
+const animalNameDisplay = document.getElementById('animalName');
+const animalCompanionSpan = document.getElementById('animalCompanion');
+const quoteText = document.getElementById('quoteText');
+const quoteAuthor = document.getElementById('quoteAuthor');
+const quoteCategory = document.getElementById('quoteCategory');
+const refreshQuoteBtn = document.getElementById('refreshQuoteBtn');
+const quoteIntervalSelect = document.getElementById('quoteInterval');
+
+// ========== GAME DATA ==========
+let userData = {
+    streak: 0,
+    lastVisit: null,
+    totalTasksCompleted: 0,
+    totalPomodoros: 0,
+    level: 1,
+    completedChallenges: []
+};
+
+let quoteIntervalTimer = null;
+let currentChallenge = null;
+
+// Helper functions for level calculation
+function getTasksForLevel(level) {
+    let total = 0;
+    for (let i = 1; i <= level; i++) {
+        if (levelRequirements[i]) {
+            total += levelRequirements[i].tasksNeeded;
+        }
+    }
+    return total;
+}
+
+function getTasksNeededForNextLevel() {
+    const nextLevel = userData.level + 1;
+    if (levelRequirements[nextLevel]) {
+        return levelRequirements[nextLevel].tasksNeeded;
+    }
+    return 0;
+}
+
+function getProgressToNextLevel() {
+    let tasksForCurrentLevel = userData.totalTasksCompleted;
+    for (let i = 1; i < userData.level; i++) {
+        if (levelRequirements[i]) {
+            tasksForCurrentLevel -= levelRequirements[i].tasksNeeded;
+        }
+    }
+    const tasksNeeded = getTasksNeededForNextLevel();
+    return {
+        completed: Math.max(0, tasksForCurrentLevel),
+        needed: tasksNeeded,
+        percentage: tasksNeeded > 0 ? (tasksForCurrentLevel / tasksNeeded) * 100 : 100
+    };
+}
+
+// Load user data
+function loadUserData() {
+    try {
+        const saved = localStorage.getItem('productivibe_user');
+        if (saved) {
+            userData = JSON.parse(saved);
+        }
+        
+        const today = new Date().toDateString();
+        if (userData.lastVisit !== today) {
+            const yesterday = new Date();
+            yesterday.setDate(yesterday.getDate() - 1);
+            
+            if (userData.lastVisit === yesterday.toDateString()) {
+                userData.streak++;
+                showToast(`🔥 ${userData.streak} day streak!`);
+            } else if (userData.lastVisit !== today) {
+                userData.streak = 1;
+            }
+            userData.lastVisit = today;
+            saveUserData();
+        }
+        
+        updateLevelBanner();
+        updateAnimalCompanion();
+    } catch(e) { console.log("Loading user data"); }
+}
+
+function saveUserData() {
+    localStorage.setItem('productivibe_user', JSON.stringify(userData));
+}
+
+function updateLevelBanner() {
+    if (levelDisplay) levelDisplay.textContent = userData.level;
+    
+    const currentLevelData = levelRequirements[userData.level];
+    if (levelNameDisplay && currentLevelData) {
+        levelNameDisplay.textContent = currentLevelData.name;
+    }
+    
+    if (streakDisplay) streakDisplay.textContent = `${userData.streak} day streak`;
+    
+    const progress = getProgressToNextLevel();
+    const tasksRemaining = progress.needed - progress.completed;
+    
+    if (tasksToNextDisplay && levelRequirements[userData.level + 1]) {
+        tasksToNextDisplay.textContent = tasksRemaining > 0 ? tasksRemaining : 0;
+    } else if (tasksToNextDisplay) {
+        tasksToNextDisplay.textContent = "MAX";
+    }
+    
+    const progressPercent = Math.min(100, progress.percentage);
+    if (progressFill) progressFill.style.width = `${progressPercent}%`;
+}
+
+function updateAnimalCompanion() {
+    const levelData = levelRequirements[userData.level];
+    if (!levelData) return;
+    
+    if (animalEmoji) animalEmoji.textContent = levelData.animal;
+    if (animalNameDisplay) animalNameDisplay.textContent = levelData.animalName;
+    if (animalCompanionSpan) animalCompanionSpan.textContent = levelData.animal;
+}
+
+function changeBackgroundColor(gradient) {
+    document.body.style.background = gradient;
+    localStorage.setItem('productivibe_bg', gradient);
+}
+
+function loadBackground() {
+    const savedBg = localStorage.getItem('productivibe_bg');
+    if (savedBg) {
+        document.body.style.background = savedBg;
+    }
+}
+
+function checkLevelUp() {
+    let newLevel = userData.level;
+    let totalNeeded = 0;
+    
+    for (let i = 1; i <= newLevel + 1; i++) {
+        if (levelRequirements[i]) {
+            totalNeeded += levelRequirements[i].tasksNeeded;
+        }
+    }
+    
+    if (levelRequirements[userData.level + 1]) {
+        let tasksForCurrentLevel = userData.totalTasksCompleted;
+        for (let i = 1; i < userData.level; i++) {
+            tasksForCurrentLevel -= levelRequirements[i].tasksNeeded;
+        }
+        
+        if (tasksForCurrentLevel >= levelRequirements[userData.level + 1].tasksNeeded) {
+            userData.level++;
+            saveUserData();
+            updateLevelBanner();
+            updateAnimalCompanion();
+            showLevelUpAnimation();
+            
+            const newAnimal = levelRequirements[userData.level];
+            showToast(`🎉 LEVEL ${userData.level} UNLOCKED! 🎉 You earned: ${newAnimal.animal} ${newAnimal.animalName}!`);
+            
+            if (levelRewards[userData.level]) {
+                changeBackgroundColor(levelRewards[userData.level].bgGradient);
+            }
+        }
+    }
+    
+    updateLevelBanner();
+}
+
+function showLevelUpAnimation() {
+    const newAnimal = levelRequirements[userData.level];
+    const animation = document.createElement('div');
+    animation.innerHTML = `
+        <div style="position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); 
+                    background: linear-gradient(135deg, #f59e0b, #ef4444); color: white; 
+                    padding: 30px 50px; border-radius: 20px; font-size: 2rem; 
+                    font-weight: bold; text-align: center; z-index: 10000;
+                    box-shadow: 0 20px 40px rgba(0,0,0,0.3); animation: bounce 0.5s ease;">
+            🎉 LEVEL UP! 🎉<br>
+            <span style="font-size: 1.5rem;">${newAnimal.animal} ${levelRequirements[userData.level]?.name}</span><br>
+            <span style="font-size: 1rem;">Your new companion: ${newAnimal.animalName}!</span>
+        </div>
+    `;
+    document.body.appendChild(animation);
+    setTimeout(() => animation.remove(), 4000);
+}
+
+function showToast(message) {
+    const toast = document.createElement('div');
+    toast.innerHTML = `<div style="position: fixed; bottom: 20px; right: 20px; background: var(--secondary); color: white; padding: 12px 20px; border-radius: 10px; z-index: 10000; animation: slideIn 0.3s ease;">${message}</div>`;
+    document.body.appendChild(toast);
+    setTimeout(() => toast.remove(), 3000);
+}
+
+// ========== RESET PROGRESS FUNCTION ==========
+function resetAllProgress() {
+    if (confirm("⚠️ WARNING: This will reset ALL your progress!\n\nThis includes:\n- Your level (back to Level 1)\n- All completed tasks\n- Your streak counter\n- Pomodoro sessions\n\nAre you ABSOLUTELY sure?")) {
+        if (confirm("LAST CHANCE: This action cannot be undone. Reset your progress?")) {
+            userData = {
+                streak: 0,
+                lastVisit: new Date().toDateString(),
+                totalTasksCompleted: 0,
+                totalPomodoros: 0,
+                level: 1,
+                completedChallenges: []
+            };
+            
+            tasks = [];
+            saveTasks();
+            saveUserData();
+            
+            document.body.style.background = "linear-gradient(135deg, #667eea 0%, #764ba2 100%)";
+            localStorage.removeItem('productivibe_bg');
+            
+            renderTasks();
+            updateLevelBanner();
+            updateAnimalCompanion();
+            updateChallengeCard();
+            
+            showToast("🔄 Progress has been reset! Starting fresh!");
+            
+            const modal = document.querySelector('.stats-modal');
+            if (modal) modal.remove();
+        }
+    }
+}
+
+// ========== DAILY CHALLENGE SYSTEM ==========
+function getRandomChallenge() {
+    const today = new Date().toDateString();
+    const savedChallenge = localStorage.getItem('dailyChallenge');
+    
+    if (savedChallenge) {
+        const parsed = JSON.parse(savedChallenge);
+        if (parsed.date === today) {
+            currentChallenge = parsed.challenge;
+            return currentChallenge;
+        }
+    }
+    
+    const randomIndex = Math.floor(Math.random() * dailyChallenges.length);
+    currentChallenge = dailyChallenges[randomIndex];
+    localStorage.setItem('dailyChallenge', JSON.stringify({
+        challenge: currentChallenge,
+        date: today
+    }));
+    return currentChallenge;
+}
+
+function updateChallengeCard() {
+    const challenge = getRandomChallenge();
+    const challengeCard = document.getElementById('challengeCard');
+    const challengeIcon = document.getElementById('challengeIcon');
+    const challengeText = document.getElementById('challengeText');
+    
+    if (challengeCard && challengeIcon && challengeText) {
+        challengeIcon.textContent = challenge.icon;
+        challengeText.textContent = challenge.text;
+        challengeCard.style.borderLeftColor = challenge.color;
+    }
+}
+
+function markChallengeComplete() {
+    const today = new Date().toDateString();
+    if (!userData.completedChallenges.includes(today)) {
+        userData.completedChallenges.push(today);
+        saveUserData();
+        showToast(`✨ Challenge complete! +1 productivity point!`);
+        updateChallengeCard();
+        
+        // Add a little celebration
+        const card = document.getElementById('challengeCard');
+        if (card) {
+            card.style.background = '#e8f5e9';
+            setTimeout(() => {
+                card.style.background = '';
+            }, 1000);
+        }
+    } else {
+        showToast(`✅ You already completed today's challenge!`);
+    }
+}
+
+// ========== QUOTE SYSTEM ==========
+function getRandomQuote(category) {
+    let quotes;
+    if (category === 'random') {
+        const categories = Object.keys(quotesDB);
+        const randomCategory = categories[Math.floor(Math.random() * categories.length)];
+        quotes = quotesDB[randomCategory];
+    } else {
+        quotes = quotesDB[category];
+    }
+    
+    if (!quotes || quotes.length === 0) {
+        quotes = quotesDB.motivation;
+    }
+    
+    return quotes[Math.floor(Math.random() * quotes.length)];
+}
+
+function updateQuote() {
+    const category = quoteCategory ? quoteCategory.value : 'random';
+    const quote = getRandomQuote(category);
+    if (quoteText) quoteText.textContent = `"${quote.text}"`;
+    if (quoteAuthor) quoteAuthor.textContent = `- ${quote.author}`;
+    
+    localStorage.setItem('lastQuote', JSON.stringify({ quote, category, date: new Date().toISOString() }));
+}
+
+function startQuoteInterval() {
+    if (quoteIntervalTimer) {
+        clearInterval(quoteIntervalTimer);
+        quoteIntervalTimer = null;
+    }
+    
+    const intervalValue = quoteIntervalSelect ? quoteIntervalSelect.value : 'day';
+    let intervalMs = 24 * 60 * 60 * 1000;
+    
+    switch(intervalValue) {
+        case 'minute':
+            intervalMs = 60 * 1000;
+            break;
+        case 'hour':
+            intervalMs = 60 * 60 * 1000;
+            break;
+        case 'day':
+            intervalMs = 24 * 60 * 60 * 1000;
+            break;
+        default:
+            intervalMs = 24 * 60 * 60 * 1000;
+    }
+    
+    if (intervalValue !== 'manual') {
+        quoteIntervalTimer = setInterval(() => {
+            updateQuote();
+            showToast(`✨ New quote loaded!`);
+        }, intervalMs);
+    }
+}
+
+function saveQuoteInterval() {
+    if (quoteIntervalSelect) {
+        localStorage.setItem('quoteInterval', quoteIntervalSelect.value);
+        startQuoteInterval();
+    }
+}
+
+function loadQuoteInterval() {
+    const saved = localStorage.getItem('quoteInterval');
+    if (saved && quoteIntervalSelect) {
+        quoteIntervalSelect.value = saved;
+    }
+    startQuoteInterval();
+}
+
+function loadDailyQuote() {
+    const saved = localStorage.getItem('lastQuote');
+    const intervalValue = quoteIntervalSelect ? quoteIntervalSelect.value : 'day';
+    
+    if (intervalValue === 'day') {
+        const today = new Date().toDateString();
+        if (saved) {
+            const parsed = JSON.parse(saved);
+            const savedDate = new Date(parsed.date).toDateString();
+            if (savedDate === today) {
+                if (quoteText) quoteText.textContent = `"${parsed.quote.text}"`;
+                if (quoteAuthor) quoteAuthor.textContent = `- ${parsed.quote.author}`;
+                if (quoteCategory) quoteCategory.value = parsed.category;
+                return;
+            }
+        }
+    }
+    
+    updateQuote();
+}
+
+if (refreshQuoteBtn) refreshQuoteBtn.addEventListener('click', updateQuote);
+if (quoteCategory) quoteCategory.addEventListener('change', updateQuote);
+if (quoteIntervalSelect) quoteIntervalSelect.addEventListener('change', saveQuoteInterval);
+
+// ========== BREATHING EXERCISE ==========
+const breathingModal = document.getElementById('breathingModal');
+const breathingBall = document.querySelector('.ball');
+const breathingInstruction = document.getElementById('breathingInstruction');
+const breathingTimer = document.getElementById('breathingTimer');
+const startBreathingBtn = document.getElementById('startBreathingBtn');
+const stopBreathingBtn = document.getElementById('stopBreathingBtn');
+const closeBreathingModal = document.getElementById('closeBreathingModal');
+const stepInhale = document.getElementById('stepInhale');
+const stepHold = document.getElementById('stepHold');
+const stepExhale = document.getElementById('stepExhale');
+
+let breathingInterval = null;
+
+function animateBallTo(size, duration) {
+    if (breathingBall) {
+        breathingBall.style.transition = `all ${duration}s ease-in-out`;
+        breathingBall.style.transform = `scale(${size})`;
+    }
+}
+
+function startBreathing() {
+    if (breathingInterval) clearInterval(breathingInterval);
+    
+    let stepIndex = 0;
+    const steps = [
+        { text: "🌬️ Breathe In...", timer: 4, size: 1.8, stepElem: stepInhale },
+        { text: "🔒 Hold...", timer: 7, size: 1.8, stepElem: stepHold },
+        { text: "🌊 Breathe Out...", timer: 8, size: 1, stepElem: stepExhale }
+    ];
+    
+    function runStep() {
+        if (stepIndex >= steps.length) {
+            stepIndex = 0;
+            runStep();
+            return;
+        }
+        
+        const step = steps[stepIndex];
+        if (breathingInstruction) breathingInstruction.textContent = step.text;
+        if (breathingTimer) breathingTimer.textContent = `${step.timer} seconds`;
+        
+        [stepInhale, stepHold, stepExhale].forEach(el => el?.classList.remove('active'));
+        if (step.stepElem) step.stepElem.classList.add('active');
+        
+        animateBallTo(step.size, step.timer);
+        
+        let timeLeft = step.timer;
+        const timerInterval = setInterval(() => {
+            timeLeft--;
+            if (breathingTimer) breathingTimer.textContent = `${timeLeft} seconds`;
+            if (timeLeft <= 0) {
+                clearInterval(timerInterval);
+                stepIndex++;
+                runStep();
+            }
+        }, 1000);
+        
+        breathingInterval = timerInterval;
+    }
+    
+    runStep();
+}
+
+function stopBreathing() {
+    if (breathingInterval) {
+        clearInterval(breathingInterval);
+        breathingInterval = null;
+    }
+    if (breathingBall) {
+        breathingBall.style.transition = 'all 0.3s ease';
+        breathingBall.style.transform = 'scale(1)';
+    }
+    if (breathingInstruction) breathingInstruction.textContent = "Ready to begin?";
+    if (breathingTimer) breathingTimer.textContent = "4 seconds";
+    [stepInhale, stepHold, stepExhale].forEach(el => el?.classList.remove('active'));
+}
+
+const breathingBtn = document.getElementById('breathingBtn');
+if (breathingBtn) {
+    breathingBtn.onclick = () => {
+        if (breathingModal) breathingModal.style.display = 'flex';
+    };
+}
+
+if (startBreathingBtn) startBreathingBtn.addEventListener('click', startBreathing);
+if (stopBreathingBtn) stopBreathingBtn.addEventListener('click', stopBreathing);
+if (closeBreathingModal) closeBreathingModal.onclick = () => {
+    stopBreathing();
+    if (breathingModal) breathingModal.style.display = 'none';
+};
+
+// ========== TIMER ==========
+let timerIntervalId;
+let timeLeft = 25 * 60;
 let isRunning = false;
 let currentMode = 'work';
 
@@ -13,148 +572,88 @@ const pauseBtn = document.getElementById('pauseBtn');
 const resetBtn = document.getElementById('resetBtn');
 const modeButtons = document.querySelectorAll('.mode-btn');
 
-// Audio for timer completion
-const timerCompleteAudio = new Audio('sounds/alarm.mp3');
-
 function updateTimerDisplay() {
     const minutes = Math.floor(timeLeft / 60);
     const seconds = timeLeft % 60;
-    timerDisplay.textContent = `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
-    
-    // Update browser tab title when timer is running
-    if (isRunning) {
-        document.title = `(${minutes}:${seconds.toString().padStart(2, '0')}) ProductiVibe`;
-    } else {
-        document.title = 'ProductiVibe - Life Improvement App';
-    }
+    if (timerDisplay) timerDisplay.textContent = `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
 }
 
 function startTimer() {
     if (isRunning) return;
     isRunning = true;
-    startBtn.innerHTML = '<i class="fas fa-play"></i> Resume';
+    if (startBtn) startBtn.innerHTML = '<i class="fas fa-play"></i> Resume';
     
-    timerInterval = setInterval(() => {
+    timerIntervalId = setInterval(() => {
         timeLeft--;
         updateTimerDisplay();
         
         if (timeLeft === 0) {
-            clearInterval(timerInterval);
+            clearInterval(timerIntervalId);
             isRunning = false;
+            if (startBtn) startBtn.innerHTML = '<i class="fas fa-play"></i> Start';
             
-            // Play notification sound
-            playTimerCompleteSound();
-            
-            // Show notification
-            showNotification(`Time's up! ${currentMode === 'work' ? 'Take a break!' : 'Time to work!'}`);
-            
-            // Auto switch to next mode
             if (currentMode === 'work') {
-                switchMode('shortBreak');
-            } else if (currentMode === 'shortBreak') {
-                switchMode('work');
+                userData.totalPomodoros++;
+                saveUserData();
+                showToast(`✅ Pomodoro completed! Total: ${userData.totalPomodoros}`);
             }
+            
+            alert(`Time's up! ${currentMode === 'work' ? 'Take a break!' : 'Back to work!'}`);
+            
+            if (currentMode === 'work') switchMode('shortBreak');
+            else if (currentMode === 'shortBreak') switchMode('work');
         }
     }, 1000);
 }
 
 function pauseTimer() {
-    clearInterval(timerInterval);
+    clearInterval(timerIntervalId);
     isRunning = false;
-    startBtn.innerHTML = '<i class="fas fa-play"></i> Resume';
+    if (startBtn) startBtn.innerHTML = '<i class="fas fa-play"></i> Resume';
 }
 
 function resetTimer() {
-    clearInterval(timerInterval);
+    clearInterval(timerIntervalId);
     isRunning = false;
-    startBtn.innerHTML = '<i class="fas fa-play"></i> Start';
-    
-    switchMode(currentMode); // Reset to current mode's default time
+    if (startBtn) startBtn.innerHTML = '<i class="fas fa-play"></i> Start';
+    switchMode(currentMode);
 }
 
 function switchMode(mode) {
     currentMode = mode;
     
-    // Update active mode button
     modeButtons.forEach(btn => {
-        if (btn.dataset.mode === mode) {
-            btn.classList.add('active');
-        } else {
-            btn.classList.remove('active');
-        }
+        if (btn.dataset.mode === mode) btn.classList.add('active');
+        else btn.classList.remove('active');
     });
     
-    // Set time based on mode
-    if (mode === 'work') {
-        timeLeft = 25 * 60;
-    } else if (mode === 'shortBreak') {
-        timeLeft = 5 * 60;
-    } else if (mode === 'longBreak') {
-        timeLeft = 15 * 60;
-    }
+    if (mode === 'work') timeLeft = 25 * 60;
+    else if (mode === 'shortBreak') timeLeft = 5 * 60;
+    else if (mode === 'longBreak') timeLeft = 15 * 60;
     
     updateTimerDisplay();
 }
 
-function playTimerCompleteSound() {
-    // Play the timer completion sound
-    timerCompleteAudio.currentTime = 0;
-    timerCompleteAudio.play().catch(e => {
-        console.log("Audio play failed, showing alert instead");
-        // Fallback to vibration if supported
-        if (navigator.vibrate) {
-            navigator.vibrate([200, 100, 200]);
-        }
-    });
-}
-
-function showNotification(message) {
-    // Check if browser supports notifications
-    if (!("Notification" in window)) {
-        alert(message);
-        return;
-    }
-    
-    // Check if notification permission is already granted
-    if (Notification.permission === "granted") {
-        new Notification(message);
-    } 
-    // Otherwise, ask the user for permission
-    else if (Notification.permission !== "denied") {
-        Notification.requestPermission().then(function (permission) {
-            if (permission === "granted") {
-                new Notification(message);
-            } else {
-                alert(message);
-            }
-        });
-    } else {
-        alert(message);
-    }
-}
-
-// Event Listeners for Timer
-startBtn.addEventListener('click', startTimer);
-pauseBtn.addEventListener('click', pauseTimer);
-resetBtn.addEventListener('click', resetTimer);
+if (startBtn) startBtn.addEventListener('click', startTimer);
+if (pauseBtn) pauseBtn.addEventListener('click', pauseTimer);
+if (resetBtn) resetBtn.addEventListener('click', resetTimer);
 
 modeButtons.forEach(btn => {
     btn.addEventListener('click', () => {
         if (isRunning) {
-            if (!confirm('Switch mode? This will reset the timer.')) return;
-            pauseTimer();
+            if (confirm('Switch mode? This will reset the timer.')) {
+                pauseTimer();
+                switchMode(btn.dataset.mode);
+            }
+        } else {
+            switchMode(btn.dataset.mode);
         }
-        switchMode(btn.dataset.mode);
     });
 });
 
-// Initialize timer display
 updateTimerDisplay();
 
-// ==============================
-// MUSIC PLAYER FUNCTIONALITY - WITH REAL SOUNDS!
-// ==============================
-
+// ========== MUSIC PLAYER ==========
 let isMusicPlaying = false;
 let currentTrack = 0;
 let currentAudio = null;
@@ -166,232 +665,67 @@ const playlistItems = document.querySelectorAll('.playlist-item');
 const currentSongElement = document.getElementById('currentSong');
 const currentArtistElement = document.getElementById('currentArtist');
 
-// LOCAL AMBIENCE SOUNDS 
 const tracks = [
-    {
-        title: "Forest Ambience",
-        artist: "Nature Sounds",
-        icon: "fa-tree",
-        file: "forest.mp3",          
-        duration: "∞",
-        volume: 0.5
-    },
-    {
-        title: "Ocean Waves", 
-        artist: "Calming Sounds",
-        icon: "fa-water",
-        file: "ocean.mp3",           
-        duration: "∞", 
-        volume: 0.6
-    },
-    {
-        title: "Rainfall",
-        artist: "Relaxation",
-        icon: "fa-cloud-rain",
-        file: "rain.mp3",            
-        duration: "∞",
-        volume: 0.5
-    },
-    {
-        title: "White Noise",
-        artist: "Focus Sounds",
-        icon: "fas fa-fan",
-        file: "white_noise.mp3",     
-        duration: "∞",
-        volume: 0.4
-    },
-    {
-        title: "Cafe Ambience",
-        artist: "Background Noise",
-        icon: "fas fa-coffee",
-        file: "cafe.mp3",            
-        duration: "∞",
-        volume: 0.5
-    }
+    { title: "Forest Ambience", artist: "Nature Sounds", file: "forest.mp3", volume: 0.5 },
+    { title: "Ocean Waves", artist: "Calming Sounds", file: "ocean.mp3", volume: 0.6 },
+    { title: "Rainfall", artist: "Relaxation", file: "rain.mp3", volume: 0.5 },
+    { title: "White Noise", artist: "Focus Sounds", file: "white_noise.mp3", volume: 0.4 },
+    { title: "Cafe Ambience", artist: "Background Noise", file: "cafe.mp3", volume: 0.5 }
 ];
 
-// Initialize audio - SIMPLE & WORKING
 function initAudio() {
     if (currentAudio) {
         currentAudio.pause();
         currentAudio = null;
     }
-    
     const track = tracks[currentTrack];
     currentAudio = new Audio('sounds/' + track.file);
     currentAudio.loop = true;
-    currentAudio.volume = track.volume || 0.5;
-    
-    // Handle loading errors
-    currentAudio.addEventListener('error', (e) => {
-        console.error('Failed to load:', track.file, e);
-        showMusicToast(`Error loading ${track.title}`);
-    });
-    
-    // FIX: Handle audio ending (prevents mute bugs)
-    currentAudio.addEventListener('ended', () => {
-        if (isMusicPlaying) {
-            console.log(`Restarting ${track.file}`);
-            currentAudio.currentTime = 0;
-            currentAudio.play().catch(e => {
-                console.log("Auto-restart failed");
-            });
-        }
-    });
-    
-    // Update UI
+    currentAudio.volume = track.volume;
     updateMusicUI();
 }
 
 function playPauseMusic() {
-    if (!currentAudio) {
-        initAudio();
-    }
-    
+    if (!currentAudio) initAudio();
     if (isMusicPlaying) {
-        // PAUSE
         currentAudio.pause();
-        playBtn.innerHTML = '<i class="fas fa-play"></i>';
-        playBtn.style.backgroundColor = 'var(--primary)';
+        if (playBtn) playBtn.innerHTML = '<i class="fas fa-play"></i>';
         isMusicPlaying = false;
-        showMusicToast('Music paused');
     } else {
-        // PLAY - simple and reliable
-        currentAudio.play().then(() => {
-            playBtn.innerHTML = '<i class="fas fa-pause"></i>';
-            playBtn.style.backgroundColor = 'var(--secondary)';
-            isMusicPlaying = true;
-            showMusicToast(`Playing: ${tracks[currentTrack].title}`);
-        }).catch(e => {
-            console.error("Play failed:", e);
-            showMusicToast('Click play again');
-        });
+        currentAudio.play().catch(e => console.log("Play failed"));
+        if (playBtn) playBtn.innerHTML = '<i class="fas fa-pause"></i>';
+        isMusicPlaying = true;
     }
 }
 
 function changeTrack(direction) {
     const wasPlaying = isMusicPlaying;
-    
-    // Pause current
     if (currentAudio) {
         currentAudio.pause();
         currentAudio = null;
     }
-    
-    // Change track
-    if (direction === 'next') {
-        currentTrack = (currentTrack + 1) % tracks.length;
-    } else {
-        currentTrack = (currentTrack - 1 + tracks.length) % tracks.length;
-    }
-    
-    // Create new audio
+    if (direction === 'next') currentTrack = (currentTrack + 1) % tracks.length;
+    else currentTrack = (currentTrack - 1 + tracks.length) % tracks.length;
     initAudio();
-    
-    // Auto-play if was playing
     if (wasPlaying) {
-        currentAudio.play().then(() => {
-            playBtn.innerHTML = '<i class="fas fa-pause"></i>';
-            playBtn.style.backgroundColor = 'var(--secondary)';
-            isMusicPlaying = true;
-            showMusicToast(`Now: ${tracks[currentTrack].title}`);
-        });
+        currentAudio.play().catch(e => console.log("Play failed"));
+        isMusicPlaying = true;
+        if (playBtn) playBtn.innerHTML = '<i class="fas fa-pause"></i>';
     }
 }
 
 function updateMusicUI() {
     playlistItems.forEach((item, index) => {
-        if (index === currentTrack) {
-            item.classList.add('active');
-        } else {
-            item.classList.remove('active');
-        }
+        if (index === currentTrack) item.classList.add('active');
+        else item.classList.remove('active');
     });
-    
-    currentSongElement.textContent = tracks[currentTrack].title;
-    currentArtistElement.textContent = `${tracks[currentTrack].artist} • ${tracks[currentTrack].duration}`;
+    if (currentSongElement) currentSongElement.textContent = tracks[currentTrack].title;
+    if (currentArtistElement) currentArtistElement.textContent = tracks[currentTrack].artist;
 }
 
-function showMusicToast(message) {
-    const existingToast = document.querySelector('.music-toast');
-    if (existingToast) existingToast.remove();
-    
-    const toast = document.createElement('div');
-    toast.className = 'music-toast';
-    toast.textContent = message;
-    
-    document.body.appendChild(toast);
-    
-    toast.style.cssText = `
-        position: fixed;
-        bottom: 20px;
-        right: 20px;
-        background: var(--primary);
-        color: white;
-        padding: 12px 20px;
-        border-radius: 10px;
-        z-index: 1000;
-        box-shadow: 0 4px 12px rgba(0,0,0,0.15);
-        animation: slideIn 0.3s ease;
-        font-weight: 500;
-    `;
-    
-    setTimeout(() => {
-        toast.style.animation = 'slideOut 0.3s ease';
-        setTimeout(() => {
-            if (toast.parentNode) document.body.removeChild(toast);
-        }, 300);
-    }, 3000);
-}
-
-// CSS for animations
-const style = document.createElement('style');
-style.textContent = `
-    @keyframes slideIn {
-        from { transform: translateX(100%); opacity: 0; }
-        to { transform: translateX(0); opacity: 1; }
-    }
-    @keyframes slideOut {
-        from { transform: translateX(0); opacity: 1; }
-        to { transform: translateX(100%); opacity: 0; }
-    }
-    
-    .volume-container {
-        margin-top: 20px;
-        display: flex;
-        align-items: center;
-        gap: 10px;
-        padding: 10px;
-        background: #f8fafc;
-        border-radius: 10px;
-    }
-    
-    .volume-slider {
-        flex: 1;
-        height: 6px;
-        -webkit-appearance: none;
-        background: #e2e8f0;
-        border-radius: 3px;
-        outline: none;
-    }
-    
-    .volume-slider::-webkit-slider-thumb {
-        -webkit-appearance: none;
-        width: 18px;
-        height: 18px;
-        border-radius: 50%;
-        background: var(--primary);
-        cursor: pointer;
-        border: 2px solid white;
-        box-shadow: 0 2px 4px rgba(0,0,0,0.2);
-    }
-`;
-document.head.appendChild(style);
-
-// Event Listeners
-playBtn.addEventListener('click', playPauseMusic);
-prevBtn.addEventListener('click', () => changeTrack('prev'));
-nextBtn.addEventListener('click', () => changeTrack('next'));
+if (playBtn) playBtn.addEventListener('click', playPauseMusic);
+if (prevBtn) prevBtn.addEventListener('click', () => changeTrack('prev'));
+if (nextBtn) nextBtn.addEventListener('click', () => changeTrack('next'));
 
 playlistItems.forEach((item, index) => {
     item.addEventListener('click', () => {
@@ -399,373 +733,235 @@ playlistItems.forEach((item, index) => {
             playPauseMusic();
         } else {
             const wasPlaying = isMusicPlaying;
-            
             if (currentAudio) {
                 currentAudio.pause();
                 currentAudio = null;
             }
-            
             currentTrack = index;
             initAudio();
-            
             if (wasPlaying) {
-                currentAudio.play().then(() => {
-                    playBtn.innerHTML = '<i class="fas fa-pause"></i>';
-                    playBtn.style.backgroundColor = 'var(--secondary)';
-                    isMusicPlaying = true;
-                    showMusicToast(`Now: ${tracks[currentTrack].title}`);
-                });
+                currentAudio.play().catch(e => console.log("Play failed"));
+                isMusicPlaying = true;
+                if (playBtn) playBtn.innerHTML = '<i class="fas fa-pause"></i>';
             }
         }
     });
 });
 
-// Add volume control
-function addVolumeControl() {
-    const musicCard = document.querySelector('.card:nth-child(2)');
+initAudio();
+
+// ========== TASK MANAGER (with un-complete feature) ==========
+const taskInput = document.getElementById('taskInput');
+const addTaskBtn = document.getElementById('addTaskBtn');
+const taskList = document.getElementById('taskList');
+
+let tasks = [];
+
+try {
+    const saved = localStorage.getItem('productivibe_tasks');
+    if (saved) tasks = JSON.parse(saved);
+} catch(e) { console.log("Could not load tasks"); }
+
+function saveTasks() {
+    localStorage.setItem('productivibe_tasks', JSON.stringify(tasks));
+}
+
+function renderTasks() {
+    if (!taskList) return;
+    taskList.innerHTML = '';
     
-    // Remove old if exists
-    const oldControl = musicCard.querySelector('.volume-container');
-    if (oldControl) oldControl.remove();
+    if (tasks.length === 0) {
+        taskList.innerHTML = '<div style="text-align: center; color: #94a3b8; padding: 30px;">✨ Click "Add Task" to start earning rewards!</div>';
+        return;
+    }
     
-    const volumeHTML = `
-        <div class="volume-container">
-            <i class="fas fa-volume-up" style="color: var(--primary);"></i>
-            <input type="range" class="volume-slider" id="volumeSlider" min="0" max="100" value="50">
-            <span id="volumeValue" style="color: var(--gray); font-size: 0.9rem; width: 40px; text-align: center;">50%</span>
-            <button id="muteBtn" style="background: none; border: none; cursor: pointer; font-size: 1.2rem;">🔊</button>
-        </div>
-    `;
-    
-    const playlist = musicCard.querySelector('.playlist');
-    playlist.insertAdjacentHTML('afterend', volumeHTML);
-    
-    const volumeSlider = document.getElementById('volumeSlider');
-    const volumeValue = document.getElementById('volumeValue');
-    const muteBtn = document.getElementById('muteBtn');
-    
-    let isMuted = false;
-    let lastVolume = 50;
-    
-    volumeSlider.addEventListener('input', function() {
-        const volume = this.value / 100;
-        if (currentAudio) {
-            currentAudio.volume = volume * (tracks[currentTrack].volume || 0.5);
-        }
-        volumeValue.textContent = `${this.value}%`;
-        lastVolume = this.value;
+    tasks.forEach((task, index) => {
+        const taskDiv = document.createElement('div');
+        taskDiv.className = 'task-item' + (task.completed ? ' completed' : '');
+        taskDiv.innerHTML = `
+            <div class="task-checkbox" style="cursor: pointer; ${task.completed ? 'background-color: #10b981; border-color: #10b981;' : ''}">
+                ${task.completed ? '<i class="fas fa-check"></i>' : ''}
+            </div>
+            <div class="task-text" style="${task.completed ? 'text-decoration: line-through; color: #94a3b8;' : ''}">
+                ${escapeHtml(task.text)}
+            </div>
+            <div class="task-delete" style="cursor: pointer; color: #94a3b8;">
+                <i class="fas fa-trash"></i>
+            </div>
+        `;
         
-        if (this.value == 0) {
-            muteBtn.innerHTML = '🔇';
-            isMuted = true;
-        } else {
-            muteBtn.innerHTML = '🔊';
-            isMuted = false;
-        }
-    });
-    
-    muteBtn.addEventListener('click', () => {
-        if (isMuted) {
-            // Unmute
-            volumeSlider.value = lastVolume;
-            if (currentAudio) {
-                currentAudio.volume = lastVolume / 100 * (tracks[currentTrack].volume || 0.5);
+        const checkbox = taskDiv.querySelector('.task-checkbox');
+        checkbox.addEventListener('click', (e) => {
+            e.stopPropagation();
+            
+            // TOGGLE completion (allow un-completing!)
+            if (tasks[index].completed) {
+                // UN-COMPLETE task
+                tasks[index].completed = false;
+                userData.totalTasksCompleted--;
+                saveUserData();
+                saveTasks();
+                renderTasks();
+                updateLevelBanner();
+                updateAnimalCompanion();
+                showToast(`↩️ Task un-completed. Total tasks: ${userData.totalTasksCompleted}`);
+            } else {
+                // COMPLETE task
+                tasks[index].completed = true;
+                userData.totalTasksCompleted++;
+                saveUserData();
+                saveTasks();
+                renderTasks();
+                updateLevelBanner();
+                updateAnimalCompanion();
+                checkLevelUp();
+                showToast(`✅ Task completed! Total: ${userData.totalTasksCompleted} tasks done!`);
             }
-            volumeValue.textContent = `${lastVolume}%`;
-            muteBtn.innerHTML = '🔊';
-            isMuted = false;
-        } else {
-            // Mute
-            lastVolume = volumeSlider.value;
-            volumeSlider.value = 0;
-            if (currentAudio) {
-                currentAudio.volume = 0;
+        });
+        
+        const deleteBtn = taskDiv.querySelector('.task-delete');
+        deleteBtn.addEventListener('click', (e) => {
+            e.stopPropagation();
+            if (tasks[index].completed) {
+                userData.totalTasksCompleted--;
+                saveUserData();
             }
-            volumeValue.textContent = '0%';
-            muteBtn.innerHTML = '🔇';
-            isMuted = true;
-        }
+            tasks.splice(index, 1);
+            saveTasks();
+            renderTasks();
+            updateLevelBanner();
+            showToast(`🗑️ Task removed`);
+        });
+        
+        taskList.appendChild(taskDiv);
     });
 }
 
-// Initialize
-initAudio();
-addVolumeControl();
+function escapeHtml(text) {
+    const div = document.createElement('div');
+    div.textContent = text;
+    return div.innerHTML;
+}
 
-// Simple background check for audio bugs (runs every 15 seconds)
-setInterval(() => {
-    if (currentAudio && isMusicPlaying && currentAudio.paused) {
-        console.log("Audio bug detected - trying to resume");
-        currentAudio.play().catch(e => {
-            console.log("Could not resume, creating new audio");
-            const track = tracks[currentTrack];
-            const newAudio = new Audio('sounds/' + track.file);
-            newAudio.loop = true;
-            newAudio.volume = track.volume || 0.5;
-            newAudio.play().then(() => {
-                currentAudio = newAudio;
-            });
-        });
+function addTask() {
+    const text = taskInput.value.trim();
+    if (text === '') {
+        showToast('📝 Please enter a task');
+        return;
     }
-}, 15000);
+    tasks.push({ text: text, completed: false, id: Date.now() });
+    saveTasks();
+    renderTasks();
+    taskInput.value = '';
+    taskInput.focus();
+    showToast(`➕ Task added: "${text}"`);
+}
 
+if (addTaskBtn) addTaskBtn.addEventListener('click', addTask);
+if (taskInput) taskInput.addEventListener('keypress', (e) => { if (e.key === 'Enter') addTask(); });
 
-// ==============================
-// FEATURE BUTTONS FUNCTIONALITY
-// ==============================
-
-// Sound for feature button clicks
-const buttonClickSound = new Audio('sounds/click.mp3');
-buttonClickSound.volume = 0.2;
-
-document.getElementById('breathingBtn').addEventListener('click', function() {
-    buttonClickSound.currentTime = 0;
-    buttonClickSound.play().catch(e => console.log("Sound play failed"));
+// ========== STATS MODAL WITH RESET BUTTON ==========
+function showStatsModal() {
+    const progress = getProgressToNextLevel();
+    const currentLevelData = levelRequirements[userData.level];
+    const nextLevelData = levelRequirements[userData.level + 1];
+    const today = new Date().toDateString();
+    const challengeCompleted = userData.completedChallenges.includes(today);
     
-    showFeatureModal('Breathing Exercises', 
-        'Try the 4-7-8 breathing technique:\n\n1. Breathe in quietly through your nose for 4 seconds\n2. Hold your breath for 7 seconds\n3. Exhale completely through your mouth for 8 seconds\n\nRepeat 4 times for immediate relaxation.\n\nClick the play button below to start a guided session.');
-    
-    // Add breathing exercise audio
-    setTimeout(() => {
-        const modal = document.querySelector('.feature-modal');
-        if (modal) {
-            const modalBody = modal.querySelector('.modal-body');
-            const breathingAudioHTML = `
-                <div style="margin-top: 20px; text-align: center;">
-                    <button id="startBreathing" class="btn btn-secondary" style="margin: 10px;">
-                        <i class="fas fa-play-circle"></i> Start Guided Breathing
-                    </button>
-                    <button id="stopBreathing" class="btn btn-outline" style="margin: 10px;">
-                        <i class="fas fa-stop"></i> Stop
-                    </button>
-                </div>
-            `;
-            modalBody.insertAdjacentHTML('beforeend', breathingAudioHTML);
-            
-            // Add breathing exercise functionality
-            const breathingAudio = new Audio('https://cdn.pixabay.com/download/audio/2022/10/13/audio_af44ff1db9.mp3?filename=meditation-and-relaxation-114356.mp3');
-            breathingAudio.loop = true;
-            breathingAudio.volume = 0.4;
-            
-            document.getElementById('startBreathing').addEventListener('click', () => {
-                breathingAudio.play();
-                showMusicToast('Starting guided breathing session');
-            });
-            
-            document.getElementById('stopBreathing').addEventListener('click', () => {
-                breathingAudio.pause();
-                breathingAudio.currentTime = 0;
-                showMusicToast('Breathing session stopped');
-            });
-        }
-    }, 100);
-});
-
-document.getElementById('statsBtn').addEventListener('click', function() {
-    buttonClickSound.currentTime = 0;
-    buttonClickSound.play().catch(e => console.log("Sound play failed"));
-    
-    const completedTasks = tasks.filter(task => task.completed).length;
-    const totalTasks = tasks.length;
-    const completionRate = totalTasks > 0 ? Math.round((completedTasks / totalTasks) * 100) : 0;
-    
-    showFeatureModal('Your Productivity Stats', 
-        `📊 Task Completion: ${completedTasks}/${totalTasks} (${completionRate}%)\n\n⏱️ Pomodoro sessions completed: 0\n\n📈 Focus streak: 0 days\n\n⭐ Achievement: ${completionRate >= 50 ? 'Productivity Star!' : 'Keep going!'}\n\n💡 Tip: Complete 3 Pomodoro sessions today to unlock a new achievement!`);
-});
-
-document.getElementById('habitsBtn').addEventListener('click', function() {
-    buttonClickSound.currentTime = 0;
-    buttonClickSound.play().catch(e => console.log("Sound play failed"));
-    
-    showFeatureModal('Habit Tracker', 
-        'Coming soon! Track daily habits like:\n\n• Morning meditation\n• Daily exercise\n• Reading 20 pages\n• Drinking 8 glasses of water\n\nBuild streaks and watch your habits transform!\n\n🎯 Current feature in development');
-});
-
-document.getElementById('quotesBtn').addEventListener('click', function() {
-    buttonClickSound.currentTime = 0;
-    buttonClickSound.play().catch(e => console.log("Sound play failed"));
-    
-    const quotes = [
-        "The future depends on what you do today. - Mahatma Gandhi",
-        "Don't watch the clock; do what it does. Keep going. - Sam Levenson",
-        "The secret of getting ahead is getting started. - Mark Twain",
-        "You are never too old to set another goal or to dream a new dream. - C.S. Lewis",
-        "The way to get started is to quit talking and begin doing. - Walt Disney",
-        "It always seems impossible until it's done. - Nelson Mandela",
-        "Productivity is never an accident. It is always the result of a commitment to excellence. - Paul J. Meyer",
-        "Focus on being productive instead of busy. - Tim Ferriss",
-        "The key is not to prioritize what's on your schedule, but to schedule your priorities. - Stephen Covey"
-    ];
-    const randomQuote = quotes[Math.floor(Math.random() * quotes.length)];
-    showFeatureModal('Daily Motivation', `"${randomQuote}"\n\n💭 Take a moment to reflect on this quote.\n\n✨ You've got this!`);
-});
-
-function showFeatureModal(title, content) {
-    // Create modal
     const modal = document.createElement('div');
-    modal.className = 'feature-modal';
+    modal.className = 'stats-modal';
+    modal.style.cssText = `position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.7); display: flex; justify-content: center; align-items: center; z-index: 1000;`;
+    
     modal.innerHTML = `
-        <div class="modal-content">
-            <div class="modal-header">
-                <h3>${title}</h3>
-                <button class="modal-close">&times;</button>
+        <div style="background: white; padding: 25px; border-radius: 15px; max-width: 400px; width: 90%; max-height: 80vh; overflow-y: auto;">
+            <h2 style="color: var(--primary); margin-bottom: 20px;">📊 Your Productivity Stats</h2>
+            
+            <div style="margin-bottom: 15px; padding: 10px; background: #f8fafc; border-radius: 10px;">
+                <strong>🐾 Your Companion:</strong> ${currentLevelData.animal} ${currentLevelData.animalName}
             </div>
-            <div class="modal-body">
-                <pre>${content}</pre>
+            <div style="margin-bottom: 15px; padding: 10px; background: #f8fafc; border-radius: 10px;">
+                <strong>🔥 Daily Streak:</strong> ${userData.streak} day${userData.streak !== 1 ? 's' : ''}
             </div>
-            <div class="modal-footer">
-                <button class="btn btn-primary modal-ok">OK</button>
+            <div style="margin-bottom: 15px; padding: 10px; background: #f8fafc; border-radius: 10px;">
+                <strong>✅ Tasks Completed:</strong> ${userData.totalTasksCompleted}
             </div>
+            <div style="margin-bottom: 15px; padding: 10px; background: #f8fafc; border-radius: 10px;">
+                <strong>⏱️ Pomodoro Sessions:</strong> ${userData.totalPomodoros}
+            </div>
+            <div style="margin-bottom: 15px; padding: 10px; background: #f8fafc; border-radius: 10px;">
+                <strong>🏆 Current Level:</strong> ${userData.level} - ${currentLevelData.name}
+            </div>
+            <div style="margin-bottom: 15px; padding: 10px; background: #dbeafe; border-radius: 10px;">
+                <strong>✨ Daily Challenge:</strong> ${challengeCompleted ? '✅ Completed today!' : '⏳ Not yet completed'}
+            </div>
+            ${nextLevelData ? `
+            <div style="margin-bottom: 15px; padding: 10px; background: #fef3c7; border-radius: 10px;">
+                <strong>⭐ Next Level:</strong> ${nextLevelData.name}<br>
+                <strong>📋 Progress:</strong> ${progress.completed}/${progress.needed} tasks<br>
+                <div style="background: #e2e8f0; height: 8px; border-radius: 10px; margin-top: 8px;">
+                    <div style="background: #f59e0b; width: ${progress.percentage}%; height: 100%; border-radius: 10px;"></div>
+                </div>
+                <small>${progress.needed - progress.completed} more tasks to level up!</small>
+            </div>
+            ` : '<div style="margin-bottom: 15px; padding: 10px; background: #10b981; border-radius: 10px;">🏆 MAX LEVEL! You are a Productivity Legend! 🏆</div>'}
+            
+            <div style="margin: 20px 0; border-top: 2px solid #e2e8f0; padding-top: 15px;">
+                <button id="resetProgressBtn" style="width: 100%; padding: 12px; background: #ef4444; color: white; border: none; border-radius: 8px; cursor: pointer; font-size: 1rem; font-weight: bold;">
+                    🔄 Reset All Progress
+                </button>
+                <p style="font-size: 0.7rem; color: #94a3b8; text-align: center; margin-top: 8px;">⚠️ This will erase all your tasks and level progress</p>
+            </div>
+            
+            <button id="modalClose" style="width: 100%; padding: 12px; background: var(--primary); color: white; border: none; border-radius: 8px; cursor: pointer; font-size: 1rem; margin-top: 10px;">
+                Close
+            </button>
         </div>
     `;
-    
-    // Add styles for modal
-    modal.style.cssText = `
-        position: fixed;
-        top: 0;
-        left: 0;
-        width: 100%;
-        height: 100%;
-        background: rgba(0, 0, 0, 0.5);
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        z-index: 1000;
-        animation: fadeIn 0.3s ease;
-    `;
-    
-    const modalContent = modal.querySelector('.modal-content');
-    modalContent.style.cssText = `
-        background: white;
-        padding: 25px;
-        border-radius: 15px;
-        max-width: 500px;
-        width: 90%;
-        max-height: 80vh;
-        overflow-y: auto;
-        animation: slideUp 0.3s ease;
-    `;
-    
-    const modalHeader = modal.querySelector('.modal-header');
-    modalHeader.style.cssText = `
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        margin-bottom: 20px;
-        padding-bottom: 15px;
-        border-bottom: 2px solid #f1f5f9;
-    `;
-    
-    const modalBody = modal.querySelector('.modal-body pre');
-    modalBody.style.cssText = `
-        white-space: pre-wrap;
-        line-height: 1.6;
-        font-size: 1.1rem;
-        color: var(--dark);
-        padding: 15px 0;
-    `;
-    
-    const modalFooter = modal.querySelector('.modal-footer');
-    modalFooter.style.cssText = `
-        margin-top: 20px;
-        text-align: right;
-    `;
-    
-    // Close buttons
-    const closeBtn = modal.querySelector('.modal-close');
-    const okBtn = modal.querySelector('.modal-ok');
-    
-    function closeModal() {
-        modal.style.animation = 'fadeOut 0.3s ease';
-        modalContent.style.animation = 'slideDown 0.3s ease';
-        setTimeout(() => {
-            document.body.removeChild(modal);
-        }, 300);
-    }
-    
-    closeBtn.addEventListener('click', closeModal);
-    okBtn.addEventListener('click', closeModal);
-    modal.addEventListener('click', (e) => {
-        if (e.target === modal) closeModal();
-    });
-    
-    // Add animation styles
-    const modalStyles = document.createElement('style');
-    if (!document.querySelector('#modal-styles')) {
-        modalStyles.id = 'modal-styles';
-        modalStyles.textContent = `
-            @keyframes fadeIn {
-                from { opacity: 0; }
-                to { opacity: 1; }
-            }
-            @keyframes fadeOut {
-                from { opacity: 1; }
-                to { opacity: 0; }
-            }
-            @keyframes slideUp {
-                from { transform: translateY(30px); opacity: 0; }
-                to { transform: translateY(0); opacity: 1; }
-            }
-            @keyframes slideDown {
-                from { transform: translateY(0); opacity: 1; }
-                to { transform: translateY(30px); opacity: 0; }
-            }
-        `;
-        document.head.appendChild(modalStyles);
-    }
     
     document.body.appendChild(modal);
+    
+    document.getElementById('modalClose').onclick = () => modal.remove();
+    const resetBtn = document.getElementById('resetProgressBtn');
+    if (resetBtn) resetBtn.onclick = () => {
+        modal.remove();
+        resetAllProgress();
+    };
+    modal.onclick = (e) => { if (e.target === modal) modal.remove(); };
 }
 
-// ==============================
-// ADDITIONAL SOUND EFFECTS
-// ==============================
-
-// Add click sounds to main buttons
-const mainButtons = document.querySelectorAll('.btn:not(#addTaskBtn)');
-mainButtons.forEach(button => {
-    button.addEventListener('click', function() {
-        const clickSound = new Audio('sounds/click.mp3');
-        clickSound.volume = 0.1;
-        clickSound.currentTime = 0;
-        clickSound.play().catch(e => console.log("Click sound failed"));
-    });
-});
-
-// Mode switch sound
-modeButtons.forEach(button => {
-    button.addEventListener('click', function() {
-        const switchSound = new Audio('sounds/click.mp3');
-        switchSound.volume = 0.2;
-        switchSound.currentTime = 0;
-        switchSound.play().catch(e => console.log("Switch sound failed"));
-    });
-});
-
-// ==============================
-// INITIALIZE THE APP
-// ==============================
-
-console.log('ProductiVibe app initialized with sounds! 🎵');
-console.log('Real audio tracks loaded from Pixabay');
-console.log('Timer completion sound enabled');
-console.log('Task completion sounds enabled');
-console.log('Button click sounds enabled');
-
-// Ask for notification permission on load
-if ("Notification" in window && Notification.permission === "default") {
-    setTimeout(() => {
-        if (confirm("Allow notifications for timer alerts?")) {
-            Notification.requestPermission();
-        }
-    }, 2000);
+// ========== FEATURE BUTTONS ==========
+function showModal(title, content) {
+    const modal = document.createElement('div');
+    modal.style.cssText = `position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); display: flex; justify-content: center; align-items: center; z-index: 1000;`;
+    modal.innerHTML = `
+        <div style="background: white; padding: 25px; border-radius: 15px; max-width: 400px; width: 90%;">
+            <h3 style="margin-bottom: 15px; color: var(--primary);">${title}</h3>
+            <p style="line-height: 1.6; white-space: pre-wrap;">${content}</p>
+            <button id="modalClose" style="margin-top: 20px; padding: 10px 20px; background: var(--primary); color: white; border: none; border-radius: 8px; cursor: pointer;">Close</button>
+        </div>
+    `;
+    document.body.appendChild(modal);
+    document.getElementById('modalClose').onclick = () => modal.remove();
+    modal.onclick = (e) => { if (e.target === modal) modal.remove(); };
 }
 
-// Add internet connection check
-window.addEventListener('online', () => {
-    showMusicToast('Connection restored! Sounds are working.');
-});
+const statsBtn = document.getElementById('statsBtn');
+const habitsBtn = document.getElementById('habitsBtn');
+const quotesBtn = document.getElementById('quotesBtn');
 
-window.addEventListener('offline', () => {
-    showMusicToast('No internet connection. Some sounds may not work.');
-});
+if (statsBtn) statsBtn.onclick = showStatsModal;
+if (habitsBtn) habitsBtn.onclick = () => showModal('📅 Habit Tracker', 'Track daily habits:\n\n✅ Morning meditation\n✅ Exercise\n✅ Reading\n✅ Hydration\n\n🚧 Full feature coming soon!');
+if (quotesBtn) quotesBtn.onclick = markChallengeComplete;
+
+// ========== INITIALIZE ==========
+loadUserData();
+loadBackground();
+renderTasks();
+loadQuoteInterval();
+loadDailyQuote();
+updateChallengeCard();
+
+console.log('✅ ProductiVibe fully loaded!');
+console.log(`🐾 Companion: ${levelRequirements[userData.level].animal} ${levelRequirements[userData.level].animalName}`);
+console.log(`🔥 Streak: ${userData.streak} days`);
+console.log(`🏆 Level: ${userData.level}`);

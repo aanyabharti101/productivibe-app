@@ -3,158 +3,235 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ProductiVibe - Life Improvement App</title>
+    <title>ProductiVibe - Focus & Relax</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="stylesheet" href="css/style.css">
-    <link rel="icon" type="image/x-icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🌿</text></svg>">
 </head>
 <body>
     <div class="container">
         <header>
             <div class="logo">
-                <i class="fas fa-leaf"></i>
-                <h1>ProductiVibe</h1>
+                <div class="animal-avatar" id="animalAvatar">
+                    <span id="animalEmoji">🐣</span>
+                </div>
+                <div class="logo-text">
+                    <h1>ProductiVibe</h1>
+                    <p class="tagline">Focus • Relax • Achieve</p>
+                </div>
             </div>
-            <p class="tagline">Your all-in-one focus, relaxation, and productivity companion</p>
         </header>
 
-        <main>
-            <div class="main-content">
-                <!-- Pomodoro Timer Card -->
-                <div class="card">
-                    <div class="card-header">
-                        <i class="fas fa-clock"></i>
-                        <h2>Focus Timer</h2>
-                    </div>
-                    <div class="timer-display" id="timer">25:00</div>
-                    <div class="timer-controls">
-                        <button class="btn btn-primary" id="startBtn">
-                            <i class="fas fa-play"></i> Start
-                        </button>
-                        <button class="btn btn-outline" id="pauseBtn">
-                            <i class="fas fa-pause"></i> Pause
-                        </button>
-                        <button class="btn btn-accent" id="resetBtn">
-                            <i class="fas fa-redo"></i> Reset
-                        </button>
-                    </div>
-                    <div class="timer-modes">
-                        <button class="mode-btn active" data-mode="work">Work (25 min)</button>
-                        <button class="mode-btn" data-mode="shortBreak">Short Break (5 min)</button>
-                        <button class="mode-btn" data-mode="longBreak">Long Break (15 min)</button>
-                    </div>
+        <!-- Level Banner -->
+        <div class="level-banner" id="levelBanner">
+            <div class="level-info">
+                <span class="level-icon">🏆</span>
+                <span class="level-text">Level <span id="currentLevel">1</span>: <span id="levelName">Beginner</span></span>
+            </div>
+            <div class="animal-companion">
+                <span id="animalName">Hatchling</span>
+                <span id="animalCompanion">🐣</span>
+            </div>
+            <div class="streak-info">
+                <span class="streak-icon">🔥</span>
+                <span class="streak-text" id="streakCount">0 day streak</span>
+            </div>
+            <div class="next-level-progress">
+                <div class="progress-label">⭐ Next Level: <span id="tasksToNext">5</span> tasks needed</div>
+                <div class="progress-bar">
+                    <div class="progress-fill" id="progressFill" style="width: 0%"></div>
                 </div>
+            </div>
+        </div>
 
-                <!-- Music Player Card -->
-                <div class="card">
-                    <div class="card-header">
-                        <i class="fas fa-music"></i>
-                        <h2>Relaxation Music</h2>
-                    </div>
-                    <div class="now-playing">
-                        <h3 id="currentSong">Forest Ambience</h3>
-                        <p id="currentArtist">Nature Sounds • 2:45</p>
-                    </div>
-                    <div class="music-controls">
-                        <button class="music-btn" id="prevBtn">
-                            <i class="fas fa-step-backward"></i>
-                        </button>
-                        <button class="music-btn" id="playBtn">
-                            <i class="fas fa-play"></i>
-                        </button>
-                        <button class="music-btn" id="nextBtn">
-                            <i class="fas fa-step-forward"></i>
-                        </button>
-                    </div>
-                    <div class="playlist">
-                        <div class="playlist-item active" data-track="0">
-                            <i class="fas fa-tree"></i>
-                            <div>
-                                <h4>Forest Ambience</h4>
-                                <p>Nature Sounds • ∞</p>
-                            </div>
-                        </div>
-                        <div class="playlist-item" data-track="1">
-                            <i class="fas fa-water"></i>
-                            <div>
-                                <h4>Ocean Waves</h4>
-                                <p>Calming Sounds • ∞</p>
-                            </div>
-                        </div>
-                        <div class="playlist-item" data-track="2">
-                            <i class="fas fa-cloud-rain"></i>
-                            <div>
-                                <h4>Rainfall</h4>
-                                <p>Relaxation • ∞</p>
-                            </div>
-                        </div>
-                        <div class="playlist-item" data-track="3">
-                            <i class="fas fa-fan"></i>
-                            <div>
-                                <h4>White Noise</h4>
-                                <p>Focus Sounds • ∞</p>
-                            </div>
-                        </div>
-                        <div class="playlist-item" data-track="4">
-                            <i class="fas fa-coffee"></i>
-                            <div>
-                                <h4>Cafe Ambience</h4>
-                                <p>Background Noise • ∞</p>
-                            </div>
-                        </div>
-                    </div>
-                    <!-- Volume control will be added by JavaScript -->
+        <!-- Daily Quote Section -->
+        <div class="quote-section">
+            <div class="quote-header">
+                <i class="fas fa-quote-left"></i>
+                <h3>Daily Inspiration</h3>
+                <div class="quote-controls">
+                    <select id="quoteCategory">
+                        <option value="random">🎲 Random</option>
+                        <option value="motivation">💪 Motivation</option>
+                        <option value="selfcare">🧘 Self-Care</option>
+                        <option value="confidence">⭐ Confidence</option>
+                        <option value="career">💼 Career</option>
+                        <option value="famous">👤 Famous People</option>
+                    </select>
+                    <select id="quoteInterval">
+                        <option value="manual">🖐️ Manual Only</option>
+                        <option value="minute">⏱️ Every Minute</option>
+                        <option value="hour">🕐 Every Hour</option>
+                        <option value="day" selected>📅 Every Day</option>
+                    </select>
+                    <button id="refreshQuoteBtn" class="quote-refresh">
+                        <i class="fas fa-sync-alt"></i> New Quote
+                    </button>
                 </div>
+            </div>
+            <div class="quote-display">
+                <p id="quoteText">"The future depends on what you do today."</p>
+                <p id="quoteAuthor">- Mahatma Gandhi</p>
+            </div>
+        </div>
 
-                <!-- Task List Card -->
-                <div class="card">
-                    <div class="card-header">
-                        <i class="fas fa-tasks"></i>
-                        <h2>Today's Tasks</h2>
+        <div class="main-content">
+            <!-- Timer Card -->
+            <div class="card">
+                <div class="card-header">
+                    <i class="fas fa-clock"></i>
+                    <h2>Focus Timer</h2>
+                </div>
+                <div class="timer-display" id="timer">25:00</div>
+                <div class="timer-controls">
+                    <button class="btn btn-primary" id="startBtn">
+                        <i class="fas fa-play"></i> Start
+                    </button>
+                    <button class="btn btn-outline" id="pauseBtn">
+                        <i class="fas fa-pause"></i> Pause
+                    </button>
+                    <button class="btn btn-accent" id="resetBtn">
+                        <i class="fas fa-redo"></i> Reset
+                    </button>
+                </div>
+                <div class="timer-modes">
+                    <button class="mode-btn active" data-mode="work">Work (25m)</button>
+                    <button class="mode-btn" data-mode="shortBreak">Break (5m)</button>
+                    <button class="mode-btn" data-mode="longBreak">Long (15m)</button>
+                </div>
+            </div>
+
+            <!-- Music Card -->
+            <div class="card">
+                <div class="card-header">
+                    <i class="fas fa-music"></i>
+                    <h2>Ambient Sounds</h2>
+                </div>
+                <div class="now-playing">
+                    <h3 id="currentSong">Forest Ambience</h3>
+                    <p id="currentArtist">Nature Sounds</p>
+                </div>
+                <div class="music-controls">
+                    <button class="music-btn" id="prevBtn">
+                        <i class="fas fa-step-backward"></i>
+                    </button>
+                    <button class="music-btn" id="playBtn">
+                        <i class="fas fa-play"></i>
+                    </button>
+                    <button class="music-btn" id="nextBtn">
+                        <i class="fas fa-step-forward"></i>
+                    </button>
+                </div>
+                <div class="playlist">
+                    <div class="playlist-item active" data-track="0">
+                        <i class="fas fa-tree"></i>
+                        <div>
+                            <h4>Forest Ambience</h4>
+                            <p>Nature Sounds</p>
+                        </div>
                     </div>
-                    <div class="task-input">
-                        <input type="text" id="taskInput" placeholder="Add a new task...">
-                        <button class="btn btn-secondary" id="addTaskBtn">
-                            <i class="fas fa-plus"></i> Add
-                        </button>
+                    <div class="playlist-item" data-track="1">
+                        <i class="fas fa-water"></i>
+                        <div>
+                            <h4>Ocean Waves</h4>
+                            <p>Calming Sounds</p>
+                        </div>
                     </div>
-                    <div class="task-list" id="taskList">
-                        <!-- Tasks will be added here dynamically -->
+                    <div class="playlist-item" data-track="2">
+                        <i class="fas fa-cloud-rain"></i>
+                        <div>
+                            <h4>Rainfall</h4>
+                            <p>Relaxation</p>
+                        </div>
+                    </div>
+                    <div class="playlist-item" data-track="3">
+                        <i class="fas fa-fan"></i>
+                        <div>
+                            <h4>White Noise</h4>
+                            <p>Focus Sounds</p>
+                        </div>
+                    </div>
+                    <div class="playlist-item" data-track="4">
+                        <i class="fas fa-coffee"></i>
+                        <div>
+                            <h4>Cafe Ambience</h4>
+                            <p>Background Noise</p>
+                        </div>
                     </div>
                 </div>
             </div>
 
-            <!-- Features Preview -->
-            <div class="features-preview">
-                <div class="feature-card" id="breathingBtn">
-                    <i class="fas fa-wind"></i>
-                    <h3>Breathing Exercises</h3>
-                    <p>Guided breathing techniques to reduce stress and improve focus</p>
+            <!-- Tasks Card -->
+            <div class="card">
+                <div class="card-header">
+                    <i class="fas fa-tasks"></i>
+                    <h2>Today's Tasks</h2>
                 </div>
-                <div class="feature-card" id="statsBtn">
-                    <i class="fas fa-chart-line"></i>
-                    <h3>Productivity Stats</h3>
-                    <p>Track your focus sessions and productivity trends over time</p>
+                <div class="task-input">
+                    <input type="text" id="taskInput" placeholder="Add a new task...">
+                    <button class="btn btn-secondary" id="addTaskBtn">
+                        <i class="fas fa-plus"></i> Add
+                    </button>
                 </div>
-                <div class="feature-card" id="habitsBtn">
-                    <i class="fas fa-calendar-check"></i>
-                    <h3>Habit Tracker</h3>
-                    <p>Build positive habits with daily tracking and reminders</p>
-                </div>
-                <div class="feature-card" id="quotesBtn">
-                    <i class="fas fa-quote-right"></i>
-                    <h3>Daily Motivation</h3>
-                    <p>Inspirational quotes and affirmations to boost your mood</p>
+                <div class="task-list" id="taskList"></div>
+            </div>
+        </div>
+
+        <!-- Features Section - Now with Daily Challenge -->
+        <div class="features">
+            <div class="feature-card" id="breathingBtn">
+                <i class="fas fa-wind"></i>
+                <h3>Breathing</h3>
+                <p>Guided session</p>
+            </div>
+            <div class="feature-card" id="statsBtn">
+                <i class="fas fa-chart-line"></i>
+                <h3>Statistics</h3>
+                <p>Track progress</p>
+            </div>
+            <div class="feature-card" id="habitsBtn">
+                <i class="fas fa-calendar-check"></i>
+                <h3>Habit Tracker</h3>
+                <p>Build habits</p>
+            </div>
+            <div class="feature-card" id="challengeCard">
+                <i class="fas fa-star" id="challengeIcon" style="color: #f59e0b;"></i>
+                <h3>Daily Challenge</h3>
+                <p id="challengeText">Take a deep breath</p>
+                <div style="margin-top: 8px;">
+                    <button id="quotesBtn" class="btn-complete" style="background: #f59e0b; color: white; border: none; padding: 5px 12px; border-radius: 15px; font-size: 0.7rem; cursor: pointer;">✨ Complete</button>
                 </div>
             </div>
-        </main>
+        </div>
 
         <footer>
-            <p>ProductiVibe © 2023 | A Life Improvement App | Focus • Relax • Achieve</p>
-            <p class="sound-notice" style="margin-top: 10px; font-size: 0.8rem; color: var(--gray);">
-                🔊 Internet required for sounds. First click may need permission.
-            </p>
+            <p>ProductiVibe © 2024 | Focus • Relax • Achieve</p>
         </footer>
+    </div>
+
+    <!-- Breathing Modal -->
+    <div id="breathingModal" class="modal" style="display: none;">
+        <div class="modal-content breathing-modal">
+            <div class="modal-header">
+                <h2>🧘 Guided Breathing Exercise</h2>
+                <button class="modal-close" id="closeBreathingModal">&times;</button>
+            </div>
+            <div class="breathing-container">
+                <div class="breathing-ball" id="breathingBall">
+                    <div class="ball"></div>
+                </div>
+                <div class="breathing-instruction" id="breathingInstruction">Ready to begin?</div>
+                <div class="breathing-timer" id="breathingTimer">4 seconds</div>
+                <div class="breathing-controls">
+                    <button id="startBreathingBtn" class="btn btn-primary">Start Session</button>
+                    <button id="stopBreathingBtn" class="btn btn-outline">Stop</button>
+                </div>
+                <div class="breathing-steps">
+                    <div class="step" id="stepInhale">🌬️ Inhale (4s)</div>
+                    <div class="step" id="stepHold">🔒 Hold (7s)</div>
+                    <div class="step" id="stepExhale">🌊 Exhale (8s)</div>
+                </div>
+            </div>
+        </div>
     </div>
 
     <script src="js/app.js"></script>
