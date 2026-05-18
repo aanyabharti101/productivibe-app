@@ -10,7 +10,7 @@
 
 ProductiVibe combines a Pomodoro timer, task manager, and ambient music player with a leveling system that rewards consistency. Complete tasks to unlock animal companions and watch your productivity grow.
 
-**Try it here:** [Live Demo](https://aanyabharti101.github.io/productivibe-app)
+**Try it here:** [Live Demo](https://aanyabharti101.github.io/productivibe-app/)
 
 ---
 
