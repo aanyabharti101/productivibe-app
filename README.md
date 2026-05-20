@@ -125,14 +125,14 @@ git clone https://github.com/aanyabharti101/productivibe-app.git
 
 # Navigate into project folder
 cd productivibe-app
-
+```
 # Open the app
 open index.html
 
 ```
 OR
 ```
-# run command in project folder
+# Run command in project folder
 npx live-server
 
 ```
