@@ -176,7 +176,7 @@
             </div>
         </div>
 
-        <!-- Features Section - Now with Daily Challenge -->
+        <!-- Features Section -->
         <div class="features">
             <div class="feature-card" id="breathingBtn">
                 <i class="fas fa-wind"></i>
@@ -199,6 +199,52 @@
                 <p id="challengeText">Take a deep breath</p>
                 <div style="margin-top: 8px;">
                     <button id="quotesBtn" class="btn-complete" style="background: #f59e0b; color: white; border: none; padding: 5px 12px; border-radius: 15px; font-size: 0.7rem; cursor: pointer;">✨ Complete</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Habit Tracker Modal -->
+        <div id="habitsModal" class="modal" style="display: none;">
+            <div class="modal-content habits-modal-content">
+                <div class="modal-header">
+                    <h2><i class="fas fa-seedling"></i> Habit Tracker</h2>
+                    <button class="modal-close" id="closeHabitsModal">&times;</button>
+                </div>
+                <div class="habits-modal-body">
+                    <!-- Add Habit Form -->
+                    <div class="add-habit-form">
+                        <h3>➕ Add New Habit</h3>
+                        <div class="form-group">
+                            <label>Habit Name</label>
+                            <input type="text" id="habitNameInput" placeholder="e.g., Morning Meditation, Daily Exercise">
+                        </div>
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label>Target (per day)</label>
+                                <input type="number" id="habitTargetInput" value="1" min="1">
+                            </div>
+                            <div class="form-group">
+                                <label>Unit</label>
+                                <input type="text" id="habitUnitInput" placeholder="times, minutes, pages">
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label>Habit Color</label>
+                            <div class="color-picker">
+                                <input type="color" id="habitColorInput" value="#6366f1">
+                                <span class="color-preview" id="colorPreview" style="background: #6366f1;"></span>
+                            </div>
+                        </div>
+                        <button id="addHabitBtn" class="btn btn-primary">+ Create Habit</button>
+                    </div>
+
+                    <!-- Habits List with Calendars -->
+                    <div class="habits-list-container">
+                        <h3>📋 Your Habits</h3>
+                        <div class="habits-list" id="habitsList">
+                            <div class="empty-habits">✨ No habits yet. Create your first habit above!</div>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>

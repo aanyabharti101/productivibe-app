@@ -1,5 +1,5 @@
 // ==============================
-// PRODUCTIVIBE - COMPLETE WITH ANIMALS, QUOTES & BREATHING
+// PRODUCTIVIBE - COMPLETE APPLICATION
 // ==============================
 
 console.log('🐾 ProductiVibe starting...');
@@ -30,57 +30,33 @@ const quotesDB = {
     motivation: [
         { text: "The secret of getting ahead is getting started.", author: "Mark Twain" },
         { text: "Don't watch the clock; do what it does. Keep going.", author: "Sam Levenson" },
-        { text: "The future depends on what you do today.", author: "Mahatma Gandhi" },
-        { text: "Your limitation—it's only your imagination.", author: "Unknown" },
-        { text: "Push yourself, because no one else is going to do it for you.", author: "Unknown" },
-        { text: "Great things never come from comfort zones.", author: "Unknown" },
-        { text: "Dream it. Wish it. Do it.", author: "Unknown" },
-        { text: "Success doesn't just find you. You have to go out and get it.", author: "Unknown" }
+        { text: "The future depends on what you do today.", author: "Mahatma Gandhi" }
     ],
     selfcare: [
         { text: "Rest when you're weary. Refresh and renew yourself.", author: "Oprah Winfrey" },
-        { text: "Self-care is not selfish. You cannot serve from an empty vessel.", author: "Eleanor Brown" },
-        { text: "Almost everything will work again if you unplug it for a few minutes.", author: "Anne Lamott" },
-        { text: "Be patient with yourself. Self-growth is tender.", author: "Unknown" },
-        { text: "Talk to yourself like you would to someone you love.", author: "Brené Brown" },
-        { text: "You owe yourself the love that you so freely give to others.", author: "Unknown" }
+        { text: "Self-care is not selfish. You cannot serve from an empty vessel.", author: "Eleanor Brown" }
     ],
     confidence: [
         { text: "Believe you can and you're halfway there.", author: "Theodore Roosevelt" },
-        { text: "Confidence comes not from always being right but from not fearing to be wrong.", author: "Peter T. McIntyre" },
-        { text: "You are enough just as you are.", author: "Meghan Markle" },
-        { text: "With confidence, you have won before you have started.", author: "Marcus Garvey" },
-        { text: "The most beautiful thing you can wear is confidence.", author: "Blake Lively" }
+        { text: "You are enough just as you are.", author: "Meghan Markle" }
     ],
     career: [
         { text: "Choose a job you love, and you will never have to work a day in your life.", author: "Confucius" },
-        { text: "Success is not the key to happiness. Happiness is the key to success.", author: "Albert Schweitzer" },
-        { text: "The only way to do great work is to love what you do.", author: "Steve Jobs" },
-        { text: "Don't be afraid to give up the good to go for the great.", author: "John D. Rockefeller" },
-        { text: "Your work is to discover your work and then with all your heart to give yourself to it.", author: "Buddha" }
+        { text: "The only way to do great work is to love what you do.", author: "Steve Jobs" }
     ],
     famous: [
         { text: "Be the change that you wish to see in the world.", author: "Mahatma Gandhi" },
-        { text: "The only impossible journey is the one you never begin.", author: "Tony Robbins" },
-        { text: "Everything you've ever wanted is on the other side of fear.", author: "George Addair" },
-        { text: "The future belongs to those who believe in the beauty of their dreams.", author: "Eleanor Roosevelt" },
-        { text: "It does not matter how slowly you go as long as you do not stop.", author: "Confucius" },
-        { text: "Success is not final, failure is not fatal: it is the courage to continue that counts.", author: "Winston Churchill" }
+        { text: "The future belongs to those who believe in the beauty of their dreams.", author: "Eleanor Roosevelt" }
     ]
 };
 
-// ========== DAILY AFFIRMATIONS / RANDOM ACTS ==========
+// ========== DAILY CHALLENGES ==========
 const dailyChallenges = [
     { icon: "💧", text: "Drink a glass of water right now!", color: "#3b82f6" },
     { icon: "🧘", text: "Take 3 deep breaths and stretch", color: "#10b981" },
     { icon: "📝", text: "Write down 3 things you're grateful for", color: "#f59e0b" },
     { icon: "🚶", text: "Stand up and walk for 1 minute", color: "#8b5cf6" },
-    { icon: "🎧", text: "Listen to a song that makes you happy", color: "#ec4899" },
-    { icon: "📖", text: "Read something inspiring for 2 minutes", color: "#06b6d4" },
-    { icon: "💬", text: "Send a kind message to someone", color: "#22c55e" },
-    { icon: "🧹", text: "Tidy up one small area of your workspace", color: "#eab308" },
-    { icon: "🎯", text: "Review your top goal for today", color: "#ef4444" },
-    { icon: "🌿", text: "Step outside for fresh air (1 minute)", color: "#14b8a6" }
+    { icon: "🎧", text: "Listen to a song that makes you happy", color: "#ec4899" }
 ];
 
 // ========== DOM Elements ==========
@@ -111,17 +87,10 @@ let userData = {
 let quoteIntervalTimer = null;
 let currentChallenge = null;
 
-// Helper functions for level calculation
-function getTasksForLevel(level) {
-    let total = 0;
-    for (let i = 1; i <= level; i++) {
-        if (levelRequirements[i]) {
-            total += levelRequirements[i].tasksNeeded;
-        }
-    }
-    return total;
-}
+// Habit Data
+let habits = [];
 
+// Helper functions
 function getTasksNeededForNextLevel() {
     const nextLevel = userData.level + 1;
     if (levelRequirements[nextLevel]) {
@@ -145,7 +114,6 @@ function getProgressToNextLevel() {
     };
 }
 
-// Load user data
 function loadUserData() {
     try {
         const saved = localStorage.getItem('productivibe_user');
@@ -222,15 +190,6 @@ function loadBackground() {
 }
 
 function checkLevelUp() {
-    let newLevel = userData.level;
-    let totalNeeded = 0;
-    
-    for (let i = 1; i <= newLevel + 1; i++) {
-        if (levelRequirements[i]) {
-            totalNeeded += levelRequirements[i].tasksNeeded;
-        }
-    }
-    
     if (levelRequirements[userData.level + 1]) {
         let tasksForCurrentLevel = userData.totalTasksCompleted;
         for (let i = 1; i < userData.level; i++) {
@@ -252,7 +211,6 @@ function checkLevelUp() {
             }
         }
     }
-    
     updateLevelBanner();
 }
 
@@ -276,14 +234,14 @@ function showLevelUpAnimation() {
 
 function showToast(message) {
     const toast = document.createElement('div');
-    toast.innerHTML = `<div style="position: fixed; bottom: 20px; right: 20px; background: var(--secondary); color: white; padding: 12px 20px; border-radius: 10px; z-index: 10000; animation: slideIn 0.3s ease;">${message}</div>`;
+    toast.innerHTML = `<div style="position: fixed; bottom: 20px; right: 20px; background: var(--secondary); color: white; padding: 12px 20px; border-radius: 10px; z-index: 10000; animation: slideIn 0.3s ease; font-size: 0.85rem;">${message}</div>`;
     document.body.appendChild(toast);
     setTimeout(() => toast.remove(), 3000);
 }
 
-// ========== RESET PROGRESS FUNCTION ==========
+// ========== RESET PROGRESS ==========
 function resetAllProgress() {
-    if (confirm("⚠️ WARNING: This will reset ALL your progress!\n\nThis includes:\n- Your level (back to Level 1)\n- All completed tasks\n- Your streak counter\n- Pomodoro sessions\n\nAre you ABSOLUTELY sure?")) {
+    if (confirm("⚠️ WARNING: This will reset ALL your progress!\n\nThis includes:\n- Your level (back to Level 1)\n- All completed tasks\n- Your streak counter\n- Pomodoro sessions\n- All habits\n\nAre you ABSOLUTELY sure?")) {
         if (confirm("LAST CHANCE: This action cannot be undone. Reset your progress?")) {
             userData = {
                 streak: 0,
@@ -295,13 +253,16 @@ function resetAllProgress() {
             };
             
             tasks = [];
+            habits = [];
             saveTasks();
+            saveHabits();
             saveUserData();
             
             document.body.style.background = "linear-gradient(135deg, #667eea 0%, #764ba2 100%)";
             localStorage.removeItem('productivibe_bg');
             
             renderTasks();
+            renderHabitTracker();
             updateLevelBanner();
             updateAnimalCompanion();
             updateChallengeCard();
@@ -314,7 +275,7 @@ function resetAllProgress() {
     }
 }
 
-// ========== DAILY CHALLENGE SYSTEM ==========
+// ========== DAILY CHALLENGE ==========
 function getRandomChallenge() {
     const today = new Date().toDateString();
     const savedChallenge = localStorage.getItem('dailyChallenge');
@@ -345,7 +306,6 @@ function updateChallengeCard() {
     if (challengeCard && challengeIcon && challengeText) {
         challengeIcon.textContent = challenge.icon;
         challengeText.textContent = challenge.text;
-        challengeCard.style.borderLeftColor = challenge.color;
     }
 }
 
@@ -355,9 +315,7 @@ function markChallengeComplete() {
         userData.completedChallenges.push(today);
         saveUserData();
         showToast(`✨ Challenge complete! +1 productivity point!`);
-        updateChallengeCard();
         
-        // Add a little celebration
         const card = document.getElementById('challengeCard');
         if (card) {
             card.style.background = '#e8f5e9';
@@ -602,6 +560,7 @@ function startTimer() {
             
             if (currentMode === 'work') switchMode('shortBreak');
             else if (currentMode === 'shortBreak') switchMode('work');
+            else if (currentMode === 'longBreak') switchMode('work');
         }
     }, 1000);
 }
@@ -750,7 +709,7 @@ playlistItems.forEach((item, index) => {
 
 initAudio();
 
-// ========== TASK MANAGER (with un-complete feature) ==========
+// ========== TASK MANAGER ==========
 const taskInput = document.getElementById('taskInput');
 const addTaskBtn = document.getElementById('addTaskBtn');
 const taskList = document.getElementById('taskList');
@@ -782,10 +741,8 @@ function renderTasks() {
             <div class="task-checkbox" style="cursor: pointer; ${task.completed ? 'background-color: #10b981; border-color: #10b981;' : ''}">
                 ${task.completed ? '<i class="fas fa-check"></i>' : ''}
             </div>
-            <div class="task-text" style="${task.completed ? 'text-decoration: line-through; color: #94a3b8;' : ''}">
-                ${escapeHtml(task.text)}
-            </div>
-            <div class="task-delete" style="cursor: pointer; color: #94a3b8;">
+            <div class="task-text">${escapeHtml(task.text)}</div>
+            <div class="task-delete" style="cursor: pointer;">
                 <i class="fas fa-trash"></i>
             </div>
         `;
@@ -794,9 +751,7 @@ function renderTasks() {
         checkbox.addEventListener('click', (e) => {
             e.stopPropagation();
             
-            // TOGGLE completion (allow un-completing!)
             if (tasks[index].completed) {
-                // UN-COMPLETE task
                 tasks[index].completed = false;
                 userData.totalTasksCompleted--;
                 saveUserData();
@@ -804,9 +759,8 @@ function renderTasks() {
                 renderTasks();
                 updateLevelBanner();
                 updateAnimalCompanion();
-                showToast(`↩️ Task un-completed. Total tasks: ${userData.totalTasksCompleted}`);
+                showToast(`↩️ Task un-completed`);
             } else {
-                // COMPLETE task
                 tasks[index].completed = true;
                 userData.totalTasksCompleted++;
                 saveUserData();
@@ -822,10 +776,6 @@ function renderTasks() {
         const deleteBtn = taskDiv.querySelector('.task-delete');
         deleteBtn.addEventListener('click', (e) => {
             e.stopPropagation();
-            if (tasks[index].completed) {
-                userData.totalTasksCompleted--;
-                saveUserData();
-            }
             tasks.splice(index, 1);
             saveTasks();
             renderTasks();
@@ -860,7 +810,337 @@ function addTask() {
 if (addTaskBtn) addTaskBtn.addEventListener('click', addTask);
 if (taskInput) taskInput.addEventListener('keypress', (e) => { if (e.key === 'Enter') addTask(); });
 
-// ========== STATS MODAL WITH RESET BUTTON ==========
+// ========== HABIT TRACKER WITH UNIFIED CALENDAR ==========
+
+function loadHabits() {
+    try {
+        const saved = localStorage.getItem('productivibe_habits');
+        if (saved) {
+            habits = JSON.parse(saved);
+        }
+    } catch(e) { console.log("Could not load habits"); }
+}
+
+function saveHabits() {
+    localStorage.setItem('productivibe_habits', JSON.stringify(habits));
+}
+
+function getTodayDateString() {
+    return new Date().toISOString().split('T')[0];
+}
+
+function isHabitCompletedToday(habit) {
+    const today = getTodayDateString();
+    return habit.completions && habit.completions[today] === true;
+}
+
+function markHabitCompletedToday(habit, completed = true) {
+    const today = getTodayDateString();
+    if (!habit.completions) habit.completions = {};
+    
+    if (completed && !habit.completions[today]) {
+        habit.completions[today] = true;
+        updateHabitStreak(habit);
+        showToast(`✅ ${habit.name} completed for today!`);
+    } else if (!completed && habit.completions[today]) {
+        delete habit.completions[today];
+        updateHabitStreak(habit);
+        showToast(`↩️ ${habit.name} un-completed for today`);
+    }
+    
+    saveHabits();
+    renderHabitTracker();
+}
+
+function updateHabitStreak(habit) {
+    if (!habit.completions) habit.completions = {};
+    
+    let currentStreak = 0;
+    let bestStreak = 0;
+    
+    let checkDate = new Date();
+    checkDate.setHours(0, 0, 0, 0);
+    
+    while (true) {
+        const dateStr = checkDate.toISOString().split('T')[0];
+        if (habit.completions[dateStr]) {
+            currentStreak++;
+            checkDate.setDate(checkDate.getDate() - 1);
+        } else {
+            break;
+        }
+    }
+    
+    const dates = Object.keys(habit.completions).sort();
+    let tempStreak = 0;
+    let prevDate = null;
+    
+    for (const dateStr of dates) {
+        const currentDate = new Date(dateStr);
+        if (prevDate) {
+            const diffDays = Math.floor((currentDate - prevDate) / (1000 * 60 * 60 * 24));
+            if (diffDays === 1) {
+                tempStreak++;
+            } else {
+                tempStreak = 1;
+            }
+        } else {
+            tempStreak = 1;
+        }
+        
+        bestStreak = Math.max(bestStreak, tempStreak);
+        prevDate = currentDate;
+    }
+    
+    habit.currentStreak = currentStreak;
+    habit.bestStreak = Math.max(habit.bestStreak || 0, bestStreak);
+}
+
+function getHabitIcon(name) {
+    const lowerName = name.toLowerCase();
+    if (lowerName.includes('meditat')) return 'fa-spa';
+    if (lowerName.includes('exercise') || lowerName.includes('workout')) return 'fa-dumbbell';
+    if (lowerName.includes('read')) return 'fa-book';
+    if (lowerName.includes('water') || lowerName.includes('hydrat')) return 'fa-tint';
+    if (lowerName.includes('walk')) return 'fa-walking';
+    if (lowerName.includes('sleep')) return 'fa-moon';
+    if (lowerName.includes('journal')) return 'fa-pen';
+    return 'fa-star';
+}
+
+// Generate unified calendar showing ALL habits with colored dots
+function generateUnifiedCalendar() {
+    const today = new Date();
+    const currentYear = today.getFullYear();
+    const currentMonth = today.getMonth();
+    
+    const firstDay = new Date(currentYear, currentMonth, 1);
+    const daysInMonth = new Date(currentYear, currentMonth + 1, 0).getDate();
+    const startingDayOfWeek = firstDay.getDay();
+    
+    let calendarHTML = `
+        <div class="unified-calendar">
+            <div class="calendar-header">
+                <button class="calendar-nav" id="prevMonthBtn"><i class="fas fa-chevron-left"></i></button>
+                <span class="calendar-month-year">${today.toLocaleString('default', { month: 'long' })} ${currentYear}</span>
+                <button class="calendar-nav" id="nextMonthBtn"><i class="fas fa-chevron-right"></i></button>
+            </div>
+            <div class="calendar-weekdays">
+                <div class="calendar-weekday">S</div>
+                <div class="calendar-weekday">M</div>
+                <div class="calendar-weekday">T</div>
+                <div class="calendar-weekday">W</div>
+                <div class="calendar-weekday">T</div>
+                <div class="calendar-weekday">F</div>
+                <div class="calendar-weekday">S</div>
+            </div>
+            <div class="calendar-days" id="calendarDays">
+    `;
+    
+    // Empty cells for days before month starts
+    for (let i = 0; i < startingDayOfWeek; i++) {
+        calendarHTML += `<div class="calendar-day-cell empty"></div>`;
+    }
+    
+    // Days of the month
+    for (let day = 1; day <= daysInMonth; day++) {
+        const dateStr = `${currentYear}-${String(currentMonth + 1).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
+        const isToday = day === today.getDate();
+        
+        // Collect all habit completions for this date
+        let dotsHTML = '';
+        for (const habit of habits) {
+            if (habit.completions && habit.completions[dateStr] === true) {
+                const habitColor = habit.color || "#6366f1";
+                dotsHTML += `<span class="calendar-dot" style="background: ${habitColor};"></span>`;
+            }
+        }
+        
+        calendarHTML += `
+            <div class="calendar-day-cell ${isToday ? 'today' : ''}" data-date="${dateStr}">
+                <span class="day-number">${day}</span>
+                <div class="calendar-dots-container">${dotsHTML}</div>
+            </div>
+        `;
+    }
+    
+    calendarHTML += `
+            </div>
+        </div>
+    `;
+    
+    return calendarHTML;
+}
+
+function renderHabitTracker() {
+    const habitsList = document.getElementById('habitsList');
+    if (!habitsList) return;
+    
+    // Render unified calendar first
+    const calendarHTML = generateUnifiedCalendar();
+    
+    if (habits.length === 0) {
+        habitsList.innerHTML = `
+            ${calendarHTML}
+            <div class="empty-habits" style="margin-top: 20px;">✨ No habits yet. Create your first habit above!</div>
+        `;
+    } else {
+        let habitsHTML = calendarHTML;
+        
+        // Add habit cards below calendar
+        habitsHTML += `<div class="habits-cards-container">`;
+        habits.forEach((habit, index) => {
+            const completedToday = isHabitCompletedToday(habit);
+            const targetText = habit.target ? `${habit.target} ${habit.unit}` : `${habit.target || 1} ${habit.unit || 'time'}`;
+            const habitColor = habit.color || "#6366f1";
+            
+            habitsHTML += `
+                <div class="habit-card" style="border-left: 4px solid ${habitColor};">
+                    <div class="habit-card-header">
+                        <span class="habit-name">
+                            <i class="fas ${getHabitIcon(habit.name)}" style="color: ${habitColor};"></i>
+                            ${escapeHtml(habit.name)}
+                        </span>
+                        <span class="habit-target">🎯 ${targetText}/day</span>
+                        <span class="habit-delete-icon" data-index="${index}">
+                            <i class="fas fa-trash"></i>
+                        </span>
+                    </div>
+                    <div class="habit-stats-row">
+                        <span><i class="fas fa-fire" style="color: ${habitColor};"></i> ${habit.currentStreak || 0} days</span>
+                        <span><i class="fas fa-trophy"></i> Best: ${habit.bestStreak || 0}</span>
+                        <span><i class="fas fa-check-circle"></i> ${habit.completions ? Object.keys(habit.completions).length : 0} total</span>
+                    </div>
+                    <div class="habit-actions">
+                        <button class="habit-check-btn ${completedToday ? 'completed' : ''}" data-index="${index}">
+                            ${completedToday ? '✅ Done Today' : '✓ Mark Done'}
+                        </button>
+                    </div>
+                </div>
+            `;
+        });
+        habitsHTML += `</div>`;
+        habitsList.innerHTML = habitsHTML;
+    }
+    
+    // Attach event listeners
+    document.querySelectorAll('.habit-check-btn').forEach(btn => {
+        btn.addEventListener('click', (e) => {
+            const index = parseInt(btn.dataset.index);
+            if (!isNaN(index) && habits[index] && !isHabitCompletedToday(habits[index])) {
+                markHabitCompletedToday(habits[index], true);
+            }
+        });
+    });
+    
+    document.querySelectorAll('.habit-delete-icon').forEach(icon => {
+        icon.addEventListener('click', (e) => {
+            const index = parseInt(icon.dataset.index);
+            if (!isNaN(index) && confirm(`Delete "${habits[index].name}"?`)) {
+                habits.splice(index, 1);
+                saveHabits();
+                renderHabitTracker();
+                showToast(`🗑️ Habit deleted`);
+            }
+        });
+    });
+    
+    // Calendar navigation
+    const prevBtn = document.getElementById('prevMonthBtn');
+    const nextBtn = document.getElementById('nextMonthBtn');
+    if (prevBtn) {
+        prevBtn.onclick = () => navigateCalendar(-1);
+    }
+    if (nextBtn) {
+        nextBtn.onclick = () => navigateCalendar(1);
+    }
+}
+
+let currentCalendarDate = new Date();
+
+function navigateCalendar(direction) {
+    currentCalendarDate.setMonth(currentCalendarDate.getMonth() + direction);
+    renderHabitTracker();
+}
+
+function addHabit() {
+    const habitName = document.getElementById('habitNameInput');
+    const habitTarget = document.getElementById('habitTargetInput');
+    const habitUnit = document.getElementById('habitUnitInput');
+    const habitColor = document.getElementById('habitColorInput');
+    
+    const name = habitName.value.trim();
+    const target = parseInt(habitTarget.value) || 1;
+    const unit = habitUnit.value.trim() || 'time';
+    const color = habitColor.value;
+    
+    if (name === '') {
+        showToast('📝 Please enter a habit name');
+        return;
+    }
+    
+    habits.push({
+        name: name,
+        target: target,
+        unit: unit,
+        color: color,
+        completions: {},
+        currentStreak: 0,
+        bestStreak: 0,
+        createdAt: new Date().toISOString()
+    });
+    
+    saveHabits();
+    renderHabitTracker();
+    
+    habitName.value = '';
+    habitTarget.value = '1';
+    habitUnit.value = 'times';
+    document.getElementById('colorPreview').style.background = "#6366f1";
+    habitColor.value = "#6366f1";
+    habitName.focus();
+    
+    showToast(`➕ Habit added: "${name}"`);
+}
+
+// Update color preview
+const habitColorInput = document.getElementById('habitColorInput');
+const colorPreview = document.getElementById('colorPreview');
+if (habitColorInput && colorPreview) {
+    habitColorInput.addEventListener('input', () => {
+        colorPreview.style.background = habitColorInput.value;
+    });
+}
+
+// ========== HABIT MODALS ==========
+const habitsModal = document.getElementById('habitsModal');
+const habitsBtn = document.getElementById('habitsBtn');
+const closeHabitsModal = document.getElementById('closeHabitsModal');
+const addHabitBtn = document.getElementById('addHabitBtn');
+
+if (habitsBtn) {
+    habitsBtn.onclick = () => {
+        if (habitsModal) habitsModal.style.display = 'flex';
+        currentCalendarDate = new Date();
+        renderHabitTracker();
+    };
+}
+
+if (closeHabitsModal) {
+    closeHabitsModal.onclick = () => {
+        if (habitsModal) habitsModal.style.display = 'none';
+    };
+}
+
+if (addHabitBtn) {
+    addHabitBtn.addEventListener('click', addHabit);
+}
+
+window.onclick = (e) => {
+    if (e.target === habitsModal) habitsModal.style.display = 'none';
+};
+
+// ========== STATS MODAL ==========
 function showStatsModal() {
     const progress = getProgressToNextLevel();
     const currentLevelData = levelRequirements[userData.level];
@@ -906,13 +1186,13 @@ function showStatsModal() {
             ` : '<div style="margin-bottom: 15px; padding: 10px; background: #10b981; border-radius: 10px;">🏆 MAX LEVEL! You are a Productivity Legend! 🏆</div>'}
             
             <div style="margin: 20px 0; border-top: 2px solid #e2e8f0; padding-top: 15px;">
-                <button id="resetProgressBtn" style="width: 100%; padding: 12px; background: #ef4444; color: white; border: none; border-radius: 8px; cursor: pointer; font-size: 1rem; font-weight: bold;">
+                <button id="resetProgressBtn" style="width: 100%; padding: 12px; background: #ef4444; color: white; border: none; border-radius: 8px; cursor: pointer; font-weight: bold;">
                     🔄 Reset All Progress
                 </button>
-                <p style="font-size: 0.7rem; color: #94a3b8; text-align: center; margin-top: 8px;">⚠️ This will erase all your tasks and level progress</p>
+                <p style="font-size: 0.7rem; color: #94a3b8; text-align: center; margin-top: 8px;">⚠️ This will erase all your tasks, habits, and level progress</p>
             </div>
             
-            <button id="modalClose" style="width: 100%; padding: 12px; background: var(--primary); color: white; border: none; border-radius: 8px; cursor: pointer; font-size: 1rem; margin-top: 10px;">
+            <button id="modalClose" style="width: 100%; padding: 12px; background: var(--primary); color: white; border: none; border-radius: 8px; cursor: pointer; margin-top: 10px;">
                 Close
             </button>
         </div>
@@ -946,22 +1226,21 @@ function showModal(title, content) {
 }
 
 const statsBtn = document.getElementById('statsBtn');
-const habitsBtn = document.getElementById('habitsBtn');
-const quotesBtn = document.getElementById('quotesBtn');
-
 if (statsBtn) statsBtn.onclick = showStatsModal;
-if (habitsBtn) habitsBtn.onclick = () => showModal('📅 Habit Tracker', 'Track daily habits:\n\n✅ Morning meditation\n✅ Exercise\n✅ Reading\n✅ Hydration\n\n🚧 Full feature coming soon!');
-if (quotesBtn) quotesBtn.onclick = markChallengeComplete;
+
+const quotesCompleteBtn = document.getElementById('quotesBtn');
+if (quotesCompleteBtn) quotesCompleteBtn.onclick = markChallengeComplete;
 
 // ========== INITIALIZE ==========
 loadUserData();
 loadBackground();
 renderTasks();
+loadHabits();
+renderHabitTracker();
 loadQuoteInterval();
 loadDailyQuote();
 updateChallengeCard();
 
+if (colorPreview) colorPreview.style.background = "#6366f1";
+
 console.log('✅ ProductiVibe fully loaded!');
-console.log(`🐾 Companion: ${levelRequirements[userData.level].animal} ${levelRequirements[userData.level].animalName}`);
-console.log(`🔥 Streak: ${userData.streak} days`);
-console.log(`🏆 Level: ${userData.level}`);
