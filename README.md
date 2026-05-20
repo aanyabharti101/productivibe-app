@@ -132,7 +132,7 @@ open index.html
 ```
 OR
 ```
-# Run command in project folder(recommended)
+# Run the command in project folder (recommeneded for no feature blocks)
 npx live-server
 
 ```
