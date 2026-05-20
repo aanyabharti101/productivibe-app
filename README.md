@@ -80,6 +80,24 @@ Each level unlocks a new background gradient as a visual reward.
 * Progress toward next level
 * Reset progress option with confirmation
 
+
+### 📈 Personal Goals (Habit Tracker)
+
+Create and track your own personal goals:
+
+- **Add custom habits** - Morning meditation, daily exercise, reading, hydration
+- **Set targets** - Choose how many times per day/week
+- **Progress bars** - Visual feedback for each habit
+- **Track streaks** - Build consistency over time
+
+**Examples:**
+- 🧘 Morning meditation: 1/1 times ✅
+- 📖 Reading: 20/20 pages ✅
+- 💧 Drinking water: 6/8 glasses
+- 🏃‍♂️ Exercise: 0/30 minutes
+
+*Goals persist automatically. Delete or reset anytime.*
+
 ---
 
 ## 🛠️ Built With
@@ -110,7 +128,10 @@ cd productivibe-app
 
 # Open the app
 open index.html
+
+```
 OR
+```
 # run command in project folder
 npx live-server
 
