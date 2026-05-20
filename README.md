@@ -110,7 +110,6 @@ cd productivibe-app
 
 # Open the app
 open index.html
-
 OR
 # run command in project folder
 npx live-server
