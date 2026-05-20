@@ -81,26 +81,35 @@ Each level unlocks a new background gradient as a visual reward.
 * Reset progress option with confirmation
 
 
-### 📈 Personal Goals (Habit Tracker)
+## 📈 Habit Tracker
 
-Create and track your own personal goals with visual progress bars:
+Build routines that stick. Track daily habits with visual progress and streak rewards.
 
-**Features:**
-- **Add custom habits** - Name your goal, set a target, choose units
-- **Progress tracking** - Mark progress with one click
-- **Visual feedback** - Progress bars fill as you get closer to your goal
-- **Goal completion** - Celebrate when you hit your target
+### Quick Start
+1. Click **Habit Tracker** card → **Create Habit**
+2. Name your habit (e.g., "Morning Meditation")
+3. Set target (e.g., "30 minutes") and pick a color
+4. Click **✓ Mark Done** each day you complete it
 
-**Examples you can add:**
-| Goal | Target | Unit |
-|------|--------|------|
-| Morning meditation | 1 | session |
-| Daily exercise | 30 | minutes |
-| Reading | 20 | pages |
-| Drink water | 8 | glasses |
-| Walk | 5000 | steps |
+### Features
+- **🎨 Color-coded calendar**: Each habit gets a unique color dot on the date
+- **🔥 Streak tracking**: Current and all-time best streaks
+- **📊 Progress overview**: See completion history at a glance
+- **💾 Auto-save**: Never lose your progress
 
-*Habits persist automatically. Delete or reset anytime.*
+### Calendar View
+One unified calendar shows ALL your habits:
+- Multiple colored dots per date = multiple habits completed
+- Today's date highlighted in blue
+- Navigate between months to review past progress
+
+### Streak Logic
+- Consecutive daily completions = longer streak
+- Miss one day? Streak resets (but best streak is saved)
+- Every new day resets the "Mark Done" button
+
+### Data Storage
+All habits, streaks, and colors persist locally. Close your browser, come back next week - your data is still there.
 
 ---
 
