@@ -83,20 +83,24 @@ Each level unlocks a new background gradient as a visual reward.
 
 ### 📈 Personal Goals (Habit Tracker)
 
-Create and track your own personal goals:
+Create and track your own personal goals with visual progress bars:
 
-- **Add custom habits** - Morning meditation, daily exercise, reading, hydration
-- **Set targets** - Choose how many times per day/week
-- **Progress bars** - Visual feedback for each habit
-- **Track streaks** - Build consistency over time
+**Features:**
+- **Add custom habits** - Name your goal, set a target, choose units
+- **Progress tracking** - Mark progress with one click
+- **Visual feedback** - Progress bars fill as you get closer to your goal
+- **Goal completion** - Celebrate when you hit your target
 
-**Examples:**
-- 🧘 Morning meditation: 1/1 times ✅
-- 📖 Reading: 20/20 pages ✅
-- 💧 Drinking water: 6/8 glasses
-- 🏃‍♂️ Exercise: 0/30 minutes
+**Examples you can add:**
+| Goal | Target | Unit |
+|------|--------|------|
+| Morning meditation | 1 | session |
+| Daily exercise | 30 | minutes |
+| Reading | 20 | pages |
+| Drink water | 8 | glasses |
+| Walk | 5000 | steps |
 
-*Goals persist automatically. Delete or reset anytime.*
+*Habits persist automatically. Delete or reset anytime.*
 
 ---
 
